@@ -9,6 +9,7 @@
 #include "init.h"
 #include "draw.h"
 #include "stage.h"
+#include "text.h"
 
 #define WIN_X 1280
 #define WIN_Y 720
@@ -25,5 +26,7 @@ extern void presentScene(void);
 extern void doInput(void);
 extern void blit(SDL_Texture* texture, int x, int y, double rotation, float scale);
 extern void initStage(void);
+extern void initTitle();
+extern void initFonts(void);
 
 #endif

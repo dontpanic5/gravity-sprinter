@@ -14,7 +14,7 @@ void initSDL()
 		exit(1);
 	}
 
-	app.window = SDL_CreateWindow("Bat Lander", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_X, WIN_Y, windowFlags);
+	app.window = SDL_CreateWindow("Batty Vamps", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_X, WIN_Y, windowFlags);
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
