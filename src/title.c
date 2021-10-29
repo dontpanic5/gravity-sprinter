@@ -6,20 +6,26 @@ static void draw(void);
 static SDL_Texture* batty;
 #define BATTY_SCALE .6
 
+static int startCounter = 0;
+
 void initTitle()
 {
 	app.delegate.logic = logic;
 	app.delegate.draw = draw;
 
 	batty = loadTexture("gfx/batty.png");
+
+	startCounter = 1;
 }
 
 static void logic()
 {
 	doInput();
 
-	if (app.up)
+	if (app.space && startCounter > 30)
 		initStage();
+
+	startCounter++;
 }
 
 static void draw()
@@ -37,7 +43,7 @@ static void draw()
 
 	strcpy_s(text1, MAX_TEXT, "LAND SAFELY ON THE TOPS OF THE HOUSES TO SUCK BLOOD!");
 	strcpy_s(text2, MAX_TEXT, "SUCKING BLOOD GIVES YOU BLOOD ENERGY!");
-	strcpy_s(text3, MAX_TEXT, "PRESS UP TO PLAY!");
+	strcpy_s(text3, MAX_TEXT, "PRESS SPACE TO PLAY!");
 
 	drawText(WIN_X / 2, WIN_Y - 200, 255, 0, 0, TEXT_CENTER, text1);
 	drawText(WIN_X / 2, WIN_Y - 150, 255, 0, 0, TEXT_CENTER, text2);

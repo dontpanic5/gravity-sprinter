@@ -22,6 +22,11 @@ void presentScene(void)
 	SDL_RenderPresent(app.renderer);
 }
 
+void drawLine(IntVector v1, IntVector v2)
+{
+	SDL_RenderDrawLine(app.renderer, v1.x, v1.y, v2.x, v2.y);
+}
+
 void blit(SDL_Texture* texture, int x, int y, double rotation, float scale)
 {
 	SDL_Rect dest = { x, y };

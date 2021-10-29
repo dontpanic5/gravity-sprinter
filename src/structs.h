@@ -25,6 +25,7 @@ typedef struct {
 	int up;
 	int right;
 	int left;
+	int space;
 } App;
 
 typedef struct {
@@ -33,6 +34,8 @@ typedef struct {
 	double rotation;
 
 	SDL_Texture* texture;
+
+	int energy;
 } Entity;
 
 #endif

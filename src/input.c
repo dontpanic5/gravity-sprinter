@@ -18,6 +18,11 @@ void doKeyUp(SDL_KeyboardEvent* event)
 		{
 			app.right = 0;
 		}
+
+		if (event->keysym.scancode == SDL_SCANCODE_SPACE)
+		{
+			app.space = 0;
+		}
 	}
 }
 
@@ -38,6 +43,11 @@ void doKeyDown(SDL_KeyboardEvent* event)
 		if (event->keysym.scancode == SDL_SCANCODE_RIGHT)
 		{
 			app.right = 1;
+		}
+
+		if (event->keysym.scancode == SDL_SCANCODE_SPACE)
+		{
+			app.space = 1;
 		}
 	}
 }
