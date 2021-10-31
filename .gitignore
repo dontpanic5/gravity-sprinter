@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/SDL2_mixer-2.0.4
+/dedbatty.xcf
+*.dll
+*.png
+*.lib

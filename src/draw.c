@@ -13,7 +13,7 @@ SDL_Texture* loadTexture(char* filename)
 
 void prepareScene(void)
 {
-	SDL_SetRenderDrawColor(app.renderer, 96, 128, 255, 255);
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
 	SDL_RenderClear(app.renderer);
 }
 
@@ -24,12 +24,13 @@ void presentScene(void)
 
 void drawLine(IntVector v1, IntVector v2)
 {
-	SDL_RenderDrawLine(app.renderer, v1.x, v1.y, v2.x, v2.y);
+	SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(app.renderer, v1.x - app.camera.x, v1.y - app.camera.y, v2.x - app.camera.x, v2.y - app.camera.y);
 }
 
 void blit(SDL_Texture* texture, int x, int y, double rotation, float scale)
 {
-	SDL_Rect dest = { x, y };
+	SDL_Rect dest = { x - app.camera.x , y - app.camera.y};
 	SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
 
 	dest.w = (int) (dest.w * scale);

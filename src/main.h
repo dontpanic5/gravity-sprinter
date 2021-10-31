@@ -10,11 +10,24 @@
 #include "draw.h"
 #include "stage.h"
 #include "text.h"
+#include "sound.h"
 
 #define WIN_X 1280
 #define WIN_Y 720
 
 #define GAME_LOOP_DELAY 16
+
+#define CAM_BUF_BOTTOM 450
+#define CAM_BUF_TOP 270
+#define CAM_BUF_HORZ 630
+
+
+// DEBUG OPTIONS
+
+//#define MAX_ENERGY
+#define SPAWN_HOUSE 11
+//#define NO_MUSIC
+
 
 App app;
 
@@ -28,5 +41,8 @@ extern void blit(SDL_Texture* texture, int x, int y, double rotation, float scal
 extern void initStage(void);
 extern void initTitle();
 extern void initFonts(void);
+extern void initSounds();
+extern void loadMusic(char* filename);
+extern void playMusic();
 
 #endif

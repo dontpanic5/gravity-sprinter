@@ -22,10 +22,14 @@ typedef struct {
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	Delegate delegate;
+	IntVector camera;
 	int up;
 	int right;
 	int left;
 	int space;
+	int t;
+
+	int lastHouse;
 } App;
 
 typedef struct {

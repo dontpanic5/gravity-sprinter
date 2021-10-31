@@ -4,11 +4,21 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 {
 	memset(&app, 0, sizeof(App));
 
+#ifdef SPAWN_HOUSE
+	app.lastHouse = SPAWN_HOUSE;
+#endif // SPAWN_HOUSE
+
 	initSDL();
 
 	initFonts();
 
 	atexit(cleanup);
+
+	initSounds();
+
+	loadMusic("audio/spooky-times-9726.mp3");
+
+	playMusic();
 
 	initTitle();
 
