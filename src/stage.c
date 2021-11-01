@@ -47,13 +47,18 @@ static int landedPause = 0;
 static int launchingFromHouseCounter = 0;
 
 static int playingFlapSound = 0;
+static int flap = 0;
 
 static int houseHeight = -1;
 
 static SDL_Texture* playerTexture;
+static SDL_Texture* playerFlapTexture;
 static SDL_Texture* chibiTexture;
 static SDL_Texture* dedChibiTexture;
 static SDL_Texture* houseTexture;
+static SDL_Texture* bgTexture;
+static SDL_Texture* bg2Texture;
+static SDL_Texture* bg3Texture;
 
 void initStage(void)
 {
@@ -61,12 +66,16 @@ void initStage(void)
 	app.delegate.draw = draw;
 
 	playerTexture = loadTexture("gfx/bat.png");
+	playerFlapTexture = loadTexture("gfx/bat2.png");
 	chibiTexture = loadTexture("gfx/batty.png");
 	dedChibiTexture = loadTexture("gfx/ded_batty.png");
 	houseTexture = loadTexture("gfx/house.png");
+	bgTexture = loadTexture("gfx/night-town-background-sky.png");
+	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
+	bg3Texture = loadTexture("gfx/night-town-background-clouds.png");
 
 	SDL_QueryTexture(houseTexture, NULL, NULL, NULL, &houseHeight);
-	houseHeight = (int)(houseHeight * HOUSE_SCALE);
+	houseHeight = (int)(houseHeight * HOUSE_SCALE) - 15; // plus 50 to put it on the ground
 
 	allGp[0] = &gp;
 	allGp[1] = &gp2;
@@ -488,7 +497,7 @@ static void battyLogic(int colliding)
 	// this is our hacky way of not falling through houses after we land on them
 	if (!colliding || !launchingFromHouseCounter || yVelo < 0)
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "yAccel %f yVelo: %f colliding: %d launchingFromHouseCounter %d", yAccel, yVelo, colliding, launchingFromHouseCounter);
+		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "yAccel %f yVelo: %f colliding: %d launchingFromHouseCounter %d", yAccel, yVelo, colliding, launchingFromHouseCounter);
 		player->pos.y += yVelo;
 	}
 }
@@ -591,21 +600,39 @@ static int collision(SDL_Rect r1, SDL_Rect r2)
 
 static void draw()
 {
-	for (int i = 0; i < NUM_OF_HOUSES; i++)
-	{
-		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE);
-	}
+	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
 
 	for (int j = 0; j < TOT_NUM_LINES; j++)
 		for (int i = 0; i < gpLengths[j] - 1; i++)
 			drawLine(allGp[j][i], allGp[j][i + 1]);
 
+	for (int i = 0; i < NUM_OF_HOUSES; i++)
+	{
+		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE);
+	}
+
 	if (crashed)
-		blit(dedChibiTexture, player->pos.x, player->pos.y, -90, CHIBI_SCALE);
+		blit(dedChibiTexture, player->pos.x, player->pos.y + 40, -90, CHIBI_SCALE);
 	else if (houseLandedOn)
-		blit(chibiTexture, player->pos.x, player->pos.y - 30, 0, CHIBI_SCALE);
+		blit(chibiTexture, player->pos.x, player->pos.y, 0, CHIBI_SCALE);
 	else
-		blit(player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+	{
+		if (playingFlapSound)
+		{
+			if (app.tickCount % 8 < 4)
+			{
+				blit(playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				flap = 0;
+			}
+			else
+			{
+				blit(player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				flap = 1;
+			}
+		}
+		else
+			blit(player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+	}
 
 	drawText(25, 25, 255, 0, 0, TEXT_LEFT, "BLOOD ENERGY: %d", player->energy);
 

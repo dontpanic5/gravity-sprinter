@@ -37,7 +37,11 @@ void blit(SDL_Texture* texture, int x, int y, double rotation, float scale)
 	dest.h = (int) (dest.h * scale);
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
-	SDL_RenderCopyEx(app.renderer, texture, NULL, &dest, rotation, NULL, flip);
+
+	// this is incredibly hacky but the only thing that rotates is Batty so hardcode her center
+	SDL_Point p = { 267 * scale, 400 * scale};
+
+	SDL_RenderCopyEx(app.renderer, texture, NULL, &dest, rotation, rotation ? &p : NULL, flip);
 }
 
 void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y)
@@ -45,4 +49,38 @@ void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y)
 	SDL_Rect dest = { x, y, src->w, src->h };
 
 	SDL_RenderCopy(app.renderer, texture, src, &dest);
+}
+
+void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
+{
+	int w = -1, h = -1;
+	SDL_QueryTexture(bg, NULL, NULL, &w, &h);
+	double scale = (double)WIN_Y / (double)h;
+	int scaledW = w * scale;
+	for (int x = 0; x < WIN_X; x += scaledW)
+	{
+		blit(bg, x + app.camera.x, 0 + app.camera.y, 0, scale);
+	}
+
+	SDL_QueryTexture(bg3, NULL, NULL, &w, &h);
+	scaledW = w * scale;
+	int offset = SDL_GetTicks() % (scaledW * 32);
+	offset /= 32;
+	//offset = (scaledW - offset);
+
+	for (int x = -offset; x < WIN_X; x += scaledW)
+		blit(bg3, x + app.camera.x, app.camera.y + (WIN_Y - h * scale), 0, scale);
+
+
+	SDL_QueryTexture(bg2, NULL, NULL, &w, &h);
+
+	scaledW = w * scale;
+
+	offset = abs(pos) % scaledW;
+	
+	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "offset %d", offset);
+	for (int x = -offset; x < WIN_X; x += scaledW)
+	{
+		blit(bg2, x + app.camera.x, app.camera.y + (WIN_Y - h * scale) + 200, 0, scale);
+	}
 }

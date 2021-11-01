@@ -4,6 +4,8 @@ static void logic(void);
 static void draw(void);
 
 static SDL_Texture* batty;
+static SDL_Texture* bgTexture;
+static SDL_Texture* bg2Texture;
 #define BATTY_SCALE .6
 
 static int startCounter = 0;
@@ -16,6 +18,8 @@ void initTitle()
 	app.camera.y = 0;
 
 	batty = loadTexture("gfx/batty.png");
+	bgTexture = loadTexture("gfx/night-town-background-sky.png");
+	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
 
 	startCounter = 1;
 }
@@ -32,6 +36,8 @@ static void logic()
 
 static void draw()
 {
+	drawBg(bgTexture, bg2Texture, 0);
+
 	IntVector sz = { 0,0 };
 	SDL_QueryTexture(batty, NULL, NULL, &sz.x, &sz.y);
 

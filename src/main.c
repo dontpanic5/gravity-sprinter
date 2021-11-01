@@ -34,6 +34,8 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		presentScene();
 
 		SDL_Delay(GAME_LOOP_DELAY);
+
+		++app.tickCount;
 	}
 
 	return 0;

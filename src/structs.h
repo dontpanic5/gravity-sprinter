@@ -29,6 +29,8 @@ typedef struct {
 	int space;
 	int t;
 
+	int tickCount;
+
 	int lastHouse;
 } App;
 

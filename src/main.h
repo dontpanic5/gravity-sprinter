@@ -25,7 +25,7 @@
 // DEBUG OPTIONS
 
 //#define MAX_ENERGY
-#define SPAWN_HOUSE 11
+//#define SPAWN_HOUSE 11
 //#define NO_MUSIC
 
 

@@ -32,7 +32,7 @@
 #define LAUNCH_COUNTER 120
 
 #define HOUSE_SCALE .5
-#define BAT_SCALE .25
+#define BAT_SCALE .20
 #define CHIBI_SCALE .15
 
 //14
