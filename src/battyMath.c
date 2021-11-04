@@ -1,4 +1,4 @@
-#include "math.h"
+#include "battyMath.h"
 
 /* Given three collinear points p, q, r, the function checks if
  * point q lies on line segment 'pr' */

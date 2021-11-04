@@ -4,7 +4,7 @@ SDL_Texture* loadTexture(char* filename)
 {
 	SDL_Texture* texture;
 
-	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", filename);
+	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", filename);
 
 	texture = IMG_LoadTexture(app.renderer, filename);
 
@@ -78,7 +78,7 @@ void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
 
 	offset = abs(pos) % scaledW;
 	
-	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "offset %d", offset);
+	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "offset %d", offset);
 	for (int x = -offset; x < WIN_X; x += scaledW)
 	{
 		blit(bg2, x + app.camera.x, app.camera.y + (WIN_Y - h * scale) + 200, 0, scale);

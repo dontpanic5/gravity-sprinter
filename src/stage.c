@@ -79,7 +79,7 @@ void initStage(void)
 	SDL_QueryTexture(houseTexture, NULL, NULL, &houseWidth, &houseHeight);
 	houseWidth = (int)(houseWidth * HOUSE_SCALE);
 	houseHeight = (int)(houseHeight * HOUSE_SCALE) - 15; // minus 15 to put it on the ground
-	SDL_QueryTexture(player->texture, NULL, NULL, &battyWidth, &battyHeight);
+	SDL_QueryTexture(playerTexture, NULL, NULL, &battyWidth, &battyHeight);
 	battyWidth = (int)(battyWidth * BAT_SCALE);
 	battyHeight = (int)(battyHeight * BAT_SCALE);
 
@@ -178,18 +178,19 @@ void initHouse(int i, int x, int y, int energy)
 	houses[i]->texture = houseTexture;
 	houses[i]->pos.x = x;
 	houses[i]->pos.y = y - houseHeight;
+	int hPosY = houses[i]->pos.y;
 	houses[i]->hitbox[0].x = x + 0;
-	houses[i]->hitbox[0].y = y + HOUSE_HITBOX_P0 * HOUSE_SCALE;
+	houses[i]->hitbox[0].y = hPosY + HOUSE_HITBOX_P0 * HOUSE_SCALE;
 	houses[i]->hitbox[1].x = x +HOUSE_HITBOX_P1 * HOUSE_SCALE;
-	houses[i]->hitbox[1].y = y;
+	houses[i]->hitbox[1].y = hPosY;
 	houses[i]->hitbox[2].x = x + HOUSE_HITBOX_P2 * HOUSE_SCALE;
-	houses[i]->hitbox[2].y = y;
+	houses[i]->hitbox[2].y = hPosY;
 	houses[i]->hitbox[3].x = x + houseWidth;
-	houses[i]->hitbox[3].y = y + HOUSE_HITBOX_P0;
+	houses[i]->hitbox[3].y = hPosY + HOUSE_HITBOX_P0;
 	houses[i]->hitbox[4].x = x + houseWidth;
-	houses[i]->hitbox[4].y = y + houseHeight;
+	houses[i]->hitbox[4].y = hPosY + houseHeight;
 	houses[i]->hitbox[5].x = x;
-	houses[i]->hitbox[5].y = y + houseHeight;
+	houses[i]->hitbox[5].y = hPosY + houseHeight;
 	// energy that is given to batty
 	houses[i]->energy = energy;
 }
@@ -418,7 +419,7 @@ static void logic(void)
 	if (houseLandedOn)
 	{
 		landedPause++;
-		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "landed. Pause counter: %d up: %d", landedPause, app.up);
+		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "landed. Pause counter: %d up: %d", landedPause, app.up);
 		//batLog("landed. Pause counter: %d up: %d", landedPause, app.up);
 		if (landedPause < 60)
 			return;
@@ -546,7 +547,7 @@ static int houseCollisions()
 		{
 			for (int b = 0; b < BATTY_POINTS - 1; b++)
 			{
-				int c = areIntersecting(houses[i]->hitbox[h], player->hitbox[b], houses[i]->hitbox[h + 1], player->hitbox[b + 1]);
+				int c = areIntersecting(houses[i]->hitbox[h], houses[i]->hitbox[h + 1], player->hitbox[b], player->hitbox[b + 1]);
 				if (c)
 				{
 					thisC = c;
@@ -567,7 +568,7 @@ static int houseCollisions()
 			{
 				crashed = 1;
 				playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
-				SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velo x: %f y: %f rot: %f", player->velocity.x, player->velocity.y, player->rotation);
+				//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velo x: %f y: %f rot: %f", player->velocity.x, player->velocity.y, player->rotation);
 				//batLog("velo x: %f y: %f rot: %f", player->velocity.x, player->velocity.y, player->rotation);
 
 				if (player->energy >= 100)
@@ -586,6 +587,8 @@ static int houseCollisions()
 					suckedBlood = 1;
 					playSound(SND_PLAYER_LAUGH, CH_PLAYER, 0);
 				}
+				// TODO check if Batty is hanging off the edge and fix
+				// TODO better instructions
 			}
 			return 1;
 		}
@@ -602,7 +605,7 @@ static int groundCollisions()
 		{
 			for (int b = 0; b < BATTY_POINTS - 1; b++)
 			{
-				if (areIntersecting(player->hitbox[b], allGp[j][i], player->hitbox[b + 1], allGp[j][i + 1]))
+				if (areIntersecting(player->hitbox[b], player->hitbox[b + 1], allGp[j][i], allGp[j][i + 1]))
 				{
 					crashed = 1;
 					playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
@@ -621,13 +624,7 @@ static int groundCollisions()
 
 static int checkCollisions()
 {
-	int c = 0; // collision happened
-
-	c = houseCollisions();
-
-	c = groundCollisions();
-	
-	return c;
+	return houseCollisions() || groundCollisions();
 }
 
 static void draw()
