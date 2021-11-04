@@ -5,6 +5,7 @@
 #include "main.h"
 #include "text.h"
 #include "sound.h"
+#include "math.h"
 
 // how many pixels are a meter
 #define M_TO_P 77
@@ -35,18 +36,23 @@
 #define BAT_SCALE .20
 #define CHIBI_SCALE .15
 
-//14
+// number of lines that make a batty hitbox
+#define BATTY_POINTS 4
+#define BATTY_HITBOX_LEFT_X 63
+#define BATTY_HITBOX_TOP_Y 277
+#define BATTY_HITBOX_RIGHT_X 474
+// number of lines that comprise a house hitbox
+// the max is based on this right now
+#define HOUSE_POINTS 6
+#define HOUSE_HITBOX_P0 73
+#define HOUSE_HITBOX_P1 59
+#define HOUSE_HITBOX_P2 325
 
-#define NUM_OF_HOUSES 13
-//38
-
-
-#define NUM_OF_GROUND_POINTS 33
+#define NUM_OF_HOUSES 13 // 14
+#define NUM_OF_GROUND_POINTS 33 //38
 #define NUM_OF_GROUND_POINTS2 5
 #define NUM_OF_GROUND_POINTS3 8
-//17
-
-#define NUM_OF_GROUND_POINTS4 10
+#define NUM_OF_GROUND_POINTS4 10 //17
 #define TOT_NUM_LINES 4
 
 extern void drawText(int x, int y, int r, int g, int b, int align, char* format, ...);
@@ -54,5 +60,6 @@ extern void drawLine(IntVector v1, IntVector v2);
 extern void batLog(char* format, ...);
 extern void playSound(int id, int chan, int loop);
 extern void haltChannel(int chan);
+extern int areIntersecting(IntVector p1, IntVector q1, IntVector p2, IntVector q2);
 
 #endif // !STAGE_H_INIT

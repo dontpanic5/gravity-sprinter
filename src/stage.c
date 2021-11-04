@@ -21,7 +21,6 @@ static void initPlayer();
 static void initLevel();
 static void battyLogic(int colliding);
 static int checkCollisions();
-static int collision(SDL_Rect r1, SDL_Rect r2);
 static void resetStage(void);
 static void stopFlapping();
 static void resetState();
@@ -50,6 +49,9 @@ static int playingFlapSound = 0;
 static int flap = 0;
 
 static int houseHeight = -1;
+static int houseWidth = -1;
+static int battyHeight = -1;
+static int battyWidth = -1;
 
 static SDL_Texture* playerTexture;
 static SDL_Texture* playerFlapTexture;
@@ -74,8 +76,12 @@ void initStage(void)
 	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
 	bg3Texture = loadTexture("gfx/night-town-background-clouds.png");
 
-	SDL_QueryTexture(houseTexture, NULL, NULL, NULL, &houseHeight);
-	houseHeight = (int)(houseHeight * HOUSE_SCALE) - 15; // plus 50 to put it on the ground
+	SDL_QueryTexture(houseTexture, NULL, NULL, &houseWidth, &houseHeight);
+	houseWidth = (int)(houseWidth * HOUSE_SCALE);
+	houseHeight = (int)(houseHeight * HOUSE_SCALE) - 15; // minus 15 to put it on the ground
+	SDL_QueryTexture(player->texture, NULL, NULL, &battyWidth, &battyHeight);
+	battyWidth = (int)(battyWidth * BAT_SCALE);
+	battyHeight = (int)(battyHeight * BAT_SCALE);
 
 	allGp[0] = &gp;
 	allGp[1] = &gp2;
@@ -115,6 +121,18 @@ static void resetStage()
 	resetState();
 }
 
+static void setPlayerHitBox()
+{
+	player->hitbox[0].x = player->pos.x + BATTY_HITBOX_LEFT_X * BAT_SCALE;
+	player->hitbox[0].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
+	player->hitbox[1].x = player->pos.x + BATTY_HITBOX_RIGHT_X * BAT_SCALE;
+	player->hitbox[1].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
+	player->hitbox[2].x = player->pos.x + BATTY_HITBOX_RIGHT_X * BAT_SCALE;
+	player->hitbox[2].y = player->pos.y + battyHeight;
+	player->hitbox[3].x = player->pos.x + BATTY_HITBOX_LEFT_X * BAT_SCALE;
+	player->hitbox[3].y = player->pos.y + battyHeight;
+}
+
 static void resetPlayer(int energy)
 {
 	memset(&player->velocity, 0, sizeof(DoubleVector));
@@ -137,6 +155,8 @@ static void resetPlayer(int energy)
 		app.camera.y = 90;
 	}
 
+	setPlayerHitBox();
+
 #ifdef MAX_ENERGY
 	player->energy = 1000000;
 #else// MAX_ENERGY
@@ -158,6 +178,18 @@ void initHouse(int i, int x, int y, int energy)
 	houses[i]->texture = houseTexture;
 	houses[i]->pos.x = x;
 	houses[i]->pos.y = y - houseHeight;
+	houses[i]->hitbox[0].x = x + 0;
+	houses[i]->hitbox[0].y = y + HOUSE_HITBOX_P0 * HOUSE_SCALE;
+	houses[i]->hitbox[1].x = x +HOUSE_HITBOX_P1 * HOUSE_SCALE;
+	houses[i]->hitbox[1].y = y;
+	houses[i]->hitbox[2].x = x + HOUSE_HITBOX_P2 * HOUSE_SCALE;
+	houses[i]->hitbox[2].y = y;
+	houses[i]->hitbox[3].x = x + houseWidth;
+	houses[i]->hitbox[3].y = y + HOUSE_HITBOX_P0;
+	houses[i]->hitbox[4].x = x + houseWidth;
+	houses[i]->hitbox[4].y = y + houseHeight;
+	houses[i]->hitbox[5].x = x;
+	houses[i]->hitbox[5].y = y + houseHeight;
 	// energy that is given to batty
 	houses[i]->energy = energy;
 }
@@ -500,27 +532,38 @@ static void battyLogic(int colliding)
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "yAccel %f yVelo: %f colliding: %d launchingFromHouseCounter %d", yAccel, yVelo, colliding, launchingFromHouseCounter);
 		player->pos.y += yVelo;
 	}
+
+	setPlayerHitBox();
 }
 
-static void houseCollisions(SDL_Rect battyRect, int *c)
+static int houseCollisions()
 {
-	int houseW = 0, houseH = 0;
-	SDL_QueryTexture(houseTexture, NULL, NULL, &houseW, &houseH);
-	houseW *= HOUSE_SCALE;
-	houseH *= HOUSE_SCALE;
-
-	SDL_Rect houseRects[NUM_OF_HOUSES];
+	int thisC = 0;
+	// the boundaries of the house that comprise the hitbox
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
 	{
-		houseRects[i].x = houses[i]->pos.x;
-		houseRects[i].y = houses[i]->pos.y;
-		houseRects[i].w = houseW;
-		houseRects[i].h = houseH;
+		for (int h = 0; h < HOUSE_POINTS - 1; h++)
+		{
+			for (int b = 0; b < BATTY_POINTS - 1; b++)
+			{
+				int c = areIntersecting(houses[i]->hitbox[h], player->hitbox[b], houses[i]->hitbox[h + 1], player->hitbox[b + 1]);
+				if (c)
+				{
+					thisC = c;
+					break;
+				}
+			}
+			if (thisC)
+				break;
+		}
 
-		int thisC = collision(battyRect, houseRects[i]);
 		if (thisC)
 		{
-			if (player->velocity.x > SAFE_VELOCITY || player->velocity.y > SAFE_VELOCITY || abs(player->rotation) > SAFE_ROTATION)
+			if (
+				player->velocity.x > SAFE_VELOCITY ||
+				player->velocity.y > SAFE_VELOCITY ||
+				(abs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter)
+			)
 			{
 				crashed = 1;
 				playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
@@ -544,58 +587,47 @@ static void houseCollisions(SDL_Rect battyRect, int *c)
 					playSound(SND_PLAYER_LAUGH, CH_PLAYER, 0);
 				}
 			}
+			return 1;
 		}
-
-		if (!*c)
-			*c = thisC;
 	}
+	return 0; // no collision
 }
 
 
-static void groundCollisions(SDL_Rect battyRect, int* c)
+static int groundCollisions()
 {
 	for (int j = 0; j < TOT_NUM_LINES; j++)
 	{
 		for (int i = 0; i < gpLengths[j] - 1; i++)
 		{
-			int x1 = allGp[j][i].x;
-			int y1 = allGp[j][i].y;
-			int x2 = allGp[j][i + 1].x;
-			int y2 = allGp[j][i + 1].y;
-			if (SDL_IntersectRectAndLine(&battyRect, &x1, &y1, &x2, &y2) == SDL_TRUE)
+			for (int b = 0; b < BATTY_POINTS - 1; b++)
 			{
-				crashed = 1;
-				playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
-				*c = 1;
+				if (areIntersecting(player->hitbox[b], allGp[j][i], player->hitbox[b + 1], allGp[j][i + 1]))
+				{
+					crashed = 1;
+					playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
 
-				if (player->energy >= 100)
-					player->energy -= 100;
-				else
-					player->energy = 0;
+					if (player->energy >= 100)
+						player->energy -= 100;
+					else
+						player->energy = 0;
+					return 1;
+				}
 			}
 		}
 	}
+	return 0;
 }
 
 static int checkCollisions()
 {
-	int c = 0;
+	int c = 0; // collision happened
 
-	SDL_Rect battyRect = { player->pos.x, player->pos.y, 0, 0 };
-	SDL_QueryTexture(player->texture, NULL, NULL, &battyRect.w, &battyRect.h);
-	battyRect.w *= BAT_SCALE;
-	battyRect.h *= BAT_SCALE;
+	c = houseCollisions();
 
-	houseCollisions(battyRect, &c);
-
-	groundCollisions(battyRect, &c);
+	c = groundCollisions();
 	
 	return c;
-}
-
-static int collision(SDL_Rect r1, SDL_Rect r2)
-{
-	return (max(r1.x, r2.x) < min(r1.x + r1.w, r2.x + r2.w)) && (max(r1.y, r2.y) < min(r1.y + r1.h, r2.y + r2.h));
 }
 
 static void draw()

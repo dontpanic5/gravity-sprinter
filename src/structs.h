@@ -3,6 +3,8 @@
 
 #include "SDL2/SDL.h"
 
+#define MAX_HITBOX_LINES 6
+
 typedef struct {
 	int x;
 	int y;
@@ -38,6 +40,8 @@ typedef struct {
 	IntVector pos;
 	DoubleVector velocity;
 	double rotation;
+
+	IntVector hitbox[MAX_HITBOX_LINES];
 
 	SDL_Texture* texture;
 

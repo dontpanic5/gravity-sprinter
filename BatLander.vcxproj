@@ -163,6 +163,7 @@
     <ClCompile Include="src\input.c" />
     <ClCompile Include="src\logging.c" />
     <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\math.c" />
     <ClCompile Include="src\sound.c" />
     <ClCompile Include="src\stage.c" />
     <ClCompile Include="src\text.c" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\math.h" />
     <ClInclude Include="src\sound.h" />
     <ClInclude Include="src\stage.h" />
     <ClInclude Include="src\structs.h" />
