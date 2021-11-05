@@ -168,7 +168,7 @@ static void initPlayer()
 {
 	player = malloc(sizeof(Entity));
 	
-	resetPlayer(300);
+	resetPlayer(300 + BLOOD_MODIFIER);
 }
 
 void initHouse(int i, int x, int y, int energy)
