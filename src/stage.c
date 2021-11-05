@@ -539,6 +539,11 @@ static void battyLogic(int colliding)
 
 static int houseCollisions()
 {
+	int w = -1, h;
+	SDL_QueryTexture(chibiTexture, NULL, NULL, &w, &h);
+	w *= CHIBI_SCALE;
+	h *= CHIBI_SCALE;
+
 	int thisC = 0;
 	// the boundaries of the house that comprise the hitbox
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
@@ -556,6 +561,18 @@ static int houseCollisions()
 			}
 			if (thisC)
 				break;
+		}
+
+		//if (i == 0)
+		//	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "player hb0: %d, %d player hb1x: %d player hb2y: %d player hb3x: %d house hb0: %d, %d hb3x: %d hb5y: %d", player->hitbox[0].x, player->hitbox[0].y, player->hitbox[1].x, player->hitbox[2].y, player->hitbox[3].x, houses[i]->hitbox[0].x, houses[i]->hitbox[0].y, houses[i]->hitbox[3].x, houses[i]->hitbox[5].y);
+		// check for being inside house
+		if (
+			player->hitbox[0].x > houses[i]->hitbox[0].x && player->hitbox[1].x < houses[i]->hitbox[3].x &&
+			player->hitbox[0].y > houses[i]->hitbox[1].y && player->hitbox[2].y < houses[i]->hitbox[5].y
+			)
+		{
+			//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "inside house");
+			thisC = 1;
 		}
 
 		if (thisC)
@@ -587,7 +604,14 @@ static int houseCollisions()
 					suckedBlood = 1;
 					playSound(SND_PLAYER_LAUGH, CH_PLAYER, 0);
 				}
-				// TODO check if Batty is hanging off the edge and fix
+
+				// check if Batty is hanging off the edge and fix
+
+				if (player->pos.x + w > houses[i]->hitbox[3].x)
+					player->pos.x = houses[i]->hitbox[3].x - w;
+				else if (player->pos.x < houses[i]->hitbox[0].x)
+					player->pos.x = houses[i]->hitbox[0].x;
+
 				// TODO better instructions
 			}
 			return 1;
