@@ -52,7 +52,7 @@ static void draw()
 	char text4[MAX_TEXT];
 	char text5[MAX_TEXT];
 
-	strcpy_s(text1a, MAX_TEXT, "LAND SAFELY ON THE TOPS OF THE HOUSES");
+	strcpy_s(text1a, MAX_TEXT, "LAND GENTLY ON THE HOUSES");
 	strcpy_s(text1b, MAX_TEXT, "TO SUCK BLOOD!");
 	strcpy_s(text2, MAX_TEXT, "SUCKING BLOOD GIVES YOU BLOOD ENERGY!");
 
