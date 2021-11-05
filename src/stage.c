@@ -192,7 +192,7 @@ void initHouse(int i, int x, int y, int energy)
 	houses[i]->hitbox[5].x = x;
 	houses[i]->hitbox[5].y = hPosY + houseHeight;
 	// energy that is given to batty
-	houses[i]->energy = energy;
+	houses[i]->energy = energy + BLOOD_MODIFIER;
 }
 
 static void initLevel()

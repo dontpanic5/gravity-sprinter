@@ -55,6 +55,8 @@
 #define NUM_OF_GROUND_POINTS4 10 //17
 #define TOT_NUM_LINES 4
 
+#define BLOOD_MODIFIER 200 // use to quickly make the game easier or harder
+
 extern void drawText(int x, int y, int r, int g, int b, int align, char* format, ...);
 extern void drawLine(IntVector v1, IntVector v2);
 extern void batLog(char* format, ...);
