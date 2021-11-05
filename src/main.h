@@ -26,7 +26,7 @@
 
 //#define MAX_ENERGY
 //#define SPAWN_HOUSE 11
-#define NO_MUSIC
+//#define NO_MUSIC
 
 
 App app;
