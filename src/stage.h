@@ -28,8 +28,8 @@
 // use this in calculations, it's the fraction of a second the game loops at
 #define GAME_LOOP_FRACTION 0.016
 
-#define SAFE_VELOCITY 180
-#define SAFE_ROTATION 11
+#define SAFE_VELOCITY 200
+#define SAFE_ROTATION 15
 
 #define LAUNCH_COUNTER 120
 

@@ -443,6 +443,7 @@ static void logic(void)
 			houseLandedOn = 0;
 			suckedBlood = 0;
 			launchingFromHouseCounter = 1; // set this to 1 so we know to count for a second
+			slideDist = 0;
 		}
 	}
 
