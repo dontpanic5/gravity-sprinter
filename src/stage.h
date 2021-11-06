@@ -56,6 +56,10 @@
 #define NUM_OF_GROUND_POINTS4 10 //17
 #define TOT_NUM_LINES 4
 
+#define LOWEST_ALLOWABLE 6500
+#define LEFTMOST_ALLOWABLE -3000
+#define RIGHTMOST_ALLOWABLE 17000
+
 #define BLOOD_MODIFIER 200 // use to quickly make the game easier or harder
 
 extern void drawText(int x, int y, int r, int g, int b, int align, char* format, ...);

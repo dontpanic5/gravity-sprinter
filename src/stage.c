@@ -42,8 +42,11 @@ static int gpLengths[TOT_NUM_LINES];
 static int houseLandedOn;
 static int suckedBlood;
 static int crashed;
+static int outOfBounds = 0;
 static int landedPause = 0;
 static int launchingFromHouseCounter = 0;
+
+static int slideDist = 0;
 
 static int playingFlapSound = 0;
 static int flap = 0;
@@ -115,6 +118,7 @@ static void resetState()
 {
 	launchingFromHouseCounter = 0;
 	crashed = 0;
+	outOfBounds = 0;
 }
 
 static void resetStage()
@@ -426,7 +430,10 @@ static void logic(void)
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "landed. Pause counter: %d up: %d", landedPause, app.up);
 		//batLog("landed. Pause counter: %d up: %d", landedPause, app.up);
 		if (landedPause < 60)
+		{
+			player->pos.x += (int) ceil(((double) slideDist) / 60);
 			return;
+		}
 		if (!app.up)
 			return;
 		else
@@ -459,7 +466,7 @@ static void logic(void)
 
 	updateCamera();
 
-	if (c)
+	if (c || outOfBounds)
 		stopFlapping();
 }
 
@@ -536,6 +543,13 @@ static void battyLogic(int colliding)
 	{
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "yAccel %f yVelo: %f colliding: %d launchingFromHouseCounter %d", yAccel, yVelo, colliding, launchingFromHouseCounter);
 		player->pos.y += yVelo;
+	}
+
+	if (player->pos.y > LOWEST_ALLOWABLE || player->pos.x > RIGHTMOST_ALLOWABLE || player->pos.x < LEFTMOST_ALLOWABLE)
+	{
+		outOfBounds = 1;
+		crashed = 1;
+		playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
 	}
 
 	setPlayerHitBox();
@@ -615,11 +629,9 @@ static int houseCollisions()
 				// check if Batty is hanging off the edge and fix
 
 				if (player->pos.x + w > houses[i]->hitbox[3].x)
-					player->pos.x = houses[i]->hitbox[3].x - w;
+					slideDist = houses[i]->hitbox[3].x - w - player->pos.x;
 				else if (player->pos.x < houses[i]->hitbox[0].x)
-					player->pos.x = houses[i]->hitbox[0].x;
-
-				// TODO better instructions
+					slideDist = houses[i]->hitbox[0].x - player->pos.x;
 			}
 			return 1;
 		}
@@ -754,16 +766,16 @@ static void draw()
 		else
 			drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU LANDED SAFELY BUT THERE IS NO MORE BLOOD TO SUCK HERE.");
 
-	if (crashed && player->energy == 0)
+	if (outOfBounds)
 	{
-		drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU DIDN'T LAND SAFELY ON THE HOUSE! YOU CRASHED!");
-		drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "YOU ARE OUT OF BLOOD ENERGY!");
+		drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU FLEW TOO FAR AWAY!");
+		(player->energy > 0) ? drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "PRESS SPACE TO CONTINUE.") : drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "YOU ARE OUT OF BLOOD ENERGY!");
 		drawText(TEXT_X, TEXT_Y + 100, 255, 0, 0, TEXT_CENTER, "PRESS T TO RETURN TO TITLE SCREEN.");
 	}
 	else if (crashed)
 	{
 		drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU DIDN'T LAND SAFELY ON THE HOUSE! YOU CRASHED!");
-		drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "PRESS SPACE TO CONTINUE.");
+		(player->energy > 0) ? drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "PRESS SPACE TO CONTINUE.") : drawText(TEXT_X, TEXT_Y + 50, 255, 0, 0, TEXT_CENTER, "YOU ARE OUT OF BLOOD ENERGY!");
 		drawText(TEXT_X, TEXT_Y + 100, 255, 0, 0, TEXT_CENTER, "PRESS T TO RETURN TO TITLE SCREEN.");
 	}
 }
