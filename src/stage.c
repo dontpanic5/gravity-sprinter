@@ -57,6 +57,8 @@ static SDL_Texture* playerTexture;
 static SDL_Texture* playerFlapTexture;
 static SDL_Texture* chibiTexture;
 static SDL_Texture* dedChibiTexture;
+static SDL_Texture* playerScaredTexture;
+static SDL_Texture* playerScaredFlapTexture;
 static SDL_Texture* houseTexture;
 static SDL_Texture* bgTexture;
 static SDL_Texture* bg2Texture;
@@ -71,6 +73,8 @@ void initStage(void)
 	playerFlapTexture = loadTexture("gfx/bat2.png");
 	chibiTexture = loadTexture("gfx/batty.png");
 	dedChibiTexture = loadTexture("gfx/ded_batty.png");
+	playerScaredTexture = loadTexture("gfx/bat_scared.png");
+	playerScaredFlapTexture = loadTexture("gfx/bat_scared2.png");
 	houseTexture = loadTexture("gfx/house.png");
 	bgTexture = loadTexture("gfx/night-town-background-sky.png");
 	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
@@ -537,6 +541,13 @@ static void battyLogic(int colliding)
 	setPlayerHitBox();
 }
 
+int willCrash()
+{
+	return player->velocity.x > SAFE_VELOCITY ||
+		player->velocity.y > SAFE_VELOCITY ||
+		(abs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter);
+}
+
 static int houseCollisions()
 {
 	int w = -1, h;
@@ -577,11 +588,7 @@ static int houseCollisions()
 
 		if (thisC)
 		{
-			if (
-				player->velocity.x > SAFE_VELOCITY ||
-				player->velocity.y > SAFE_VELOCITY ||
-				(abs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter)
-			)
+			if (willCrash())
 			{
 				crashed = 1;
 				playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
@@ -651,41 +658,93 @@ static int checkCollisions()
 	return houseCollisions() || groundCollisions();
 }
 
-static void draw()
+static isBattyScared()
 {
-	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
-
-	for (int j = 0; j < TOT_NUM_LINES; j++)
-		for (int i = 0; i < gpLengths[j] - 1; i++)
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
 	{
-		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE);
+		int x = abs(houses[i]->pos.x - player->pos.x);
+		int y = abs(houses[i]->pos.y - player->pos.y);
+		if (sqrt(x * x + y * y) < 400 && willCrash() && player->velocity.y > 0)
+		{
+			return 1;
+		}
 	}
+	return 0;
+}
 
+static void drawBatty()
+{
 	if (crashed)
 		blit(dedChibiTexture, player->pos.x, player->pos.y + 40, -90, CHIBI_SCALE);
 	else if (houseLandedOn)
 		blit(chibiTexture, player->pos.x, player->pos.y, 0, CHIBI_SCALE);
 	else
 	{
+		int scared = isBattyScared();
 		if (playingFlapSound)
 		{
 			if (app.tickCount % 8 < 4)
 			{
-				blit(playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				blit(scared ? playerScaredFlapTexture : playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
 				flap = 0;
 			}
 			else
 			{
-				blit(player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
 				flap = 1;
 			}
 		}
 		else
-			blit(player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+			blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
 	}
+}
+
+static void draw()
+{
+	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
+
+	for (int j = 0; j < TOT_NUM_LINES; j++)
+		for (int i = 0; i < gpLengths[j] - 1; i++)
+		{
+			// draw three lines to make it thicc
+
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].y++;
+			allGp[j][i + 1].y++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].x++;
+			allGp[j][i + 1].x++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].y++;
+			allGp[j][i + 1].y++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].x++;
+			allGp[j][i + 1].x++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].y++;
+			allGp[j][i + 1].y++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].x++;
+			allGp[j][i + 1].x++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].y++;
+			allGp[j][i + 1].y++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].x++;
+			allGp[j][i + 1].x++;
+			drawLine(allGp[j][i], allGp[j][i + 1]);
+			allGp[j][i].y -= 4;
+			allGp[j][i + 1].y -= 4;
+			allGp[j][i].x -= 4;
+			allGp[j][i + 1].x -= 4;
+		}
+
+	for (int i = 0; i < NUM_OF_HOUSES; i++)
+	{
+		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE);
+	}
+
+	drawBatty();
 
 	drawText(25, 25, 255, 0, 0, TEXT_LEFT, "BLOOD ENERGY: %d", player->energy);
 
