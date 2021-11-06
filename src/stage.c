@@ -629,7 +629,7 @@ static int houseCollisions()
 				// check if Batty is hanging off the edge and fix
 
 				if (player->pos.x + w > houses[i]->hitbox[3].x)
-					slideDist = houses[i]->hitbox[3].x - w - player->pos.x;
+					slideDist = houses[i]->hitbox[3].x - (player->pos.x + w) - 50; // fudge it and subtract 100
 				else if (player->pos.x < houses[i]->hitbox[0].x)
 					slideDist = houses[i]->hitbox[0].x - player->pos.x;
 			}
