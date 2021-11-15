@@ -25,7 +25,7 @@
 // DEBUG OPTIONS
 
 //#define MAX_ENERGY
-//#define SPAWN_HOUSE 11
+//#define SPAWN_HOUSE 7
 //#define NO_MUSIC
 
 
@@ -37,7 +37,7 @@ extern SDL_Texture* loadTexture(char* filename);
 extern void prepareScene(void);
 extern void presentScene(void);
 extern void doInput(void);
-extern void blit(SDL_Texture* texture, int x, int y, double rotation, float scale);
+extern void blit(SDL_Texture* texture, int x, int y, double rotation, float scale, SDL_RendererFlip flip);
 extern void initStage(void);
 extern void initTitle();
 extern void initFonts(void);

@@ -64,6 +64,7 @@
 
 extern void drawText(int x, int y, int r, int g, int b, int align, char* format, ...);
 extern void drawLine(IntVector v1, IntVector v2);
+extern void drawLineColored(IntVector v1, IntVector v2, Uint8 r, Uint8 g, Uint8 b);
 extern void batLog(char* format, ...);
 extern void playSound(int id, int chan, int loop);
 extern void haltChannel(int chan);

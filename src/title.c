@@ -43,7 +43,7 @@ static void draw()
 
 	int posX = (int) (WIN_X - (sz.x * BATTY_SCALE)) / 2;
 
-	blit(batty, 25, 25, 0, (float) BATTY_SCALE);
+	blit(batty, 25, 25, 0, (float) BATTY_SCALE, SDL_FLIP_NONE);
 
 	char text1a[MAX_TEXT];
 	char text1b[MAX_TEXT];

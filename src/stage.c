@@ -51,6 +51,8 @@ static int slideDist = 0;
 static int playingFlapSound = 0;
 static int flap = 0;
 
+static int battyFlipped = 0;
+
 static int houseHeight = -1;
 static int houseWidth = -1;
 static int battyHeight = -1;
@@ -131,13 +133,13 @@ static void resetStage()
 
 static void setPlayerHitBox()
 {
-	player->hitbox[0].x = player->pos.x + BATTY_HITBOX_LEFT_X * BAT_SCALE;
+	player->hitbox[0].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
 	player->hitbox[0].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
-	player->hitbox[1].x = player->pos.x + BATTY_HITBOX_RIGHT_X * BAT_SCALE;
+	player->hitbox[1].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
 	player->hitbox[1].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
-	player->hitbox[2].x = player->pos.x + BATTY_HITBOX_RIGHT_X * BAT_SCALE;
+	player->hitbox[2].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_RIGHT_X * BAT_SCALE);
 	player->hitbox[2].y = player->pos.y + battyHeight;
-	player->hitbox[3].x = player->pos.x + BATTY_HITBOX_LEFT_X * BAT_SCALE;
+	player->hitbox[3].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
 	player->hitbox[3].y = player->pos.y + battyHeight;
 }
 
@@ -553,6 +555,11 @@ static void battyLogic(int colliding)
 		playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
 	}
 
+	if (player->velocity.x > SAFE_VELOCITY)
+		battyFlipped = 1;
+	else if (player->velocity.x < -SAFE_VELOCITY)
+		battyFlipped = 0;
+
 	setPlayerHitBox();
 }
 
@@ -687,10 +694,14 @@ static isBattyScared()
 
 static void drawBatty()
 {
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if (battyFlipped)
+		flip = SDL_FLIP_HORIZONTAL;
+
 	if (crashed)
-		blit(dedChibiTexture, player->pos.x, player->pos.y + 40, -90, CHIBI_SCALE);
+		blit(dedChibiTexture, player->pos.x, player->pos.y + 40, -90, CHIBI_SCALE, flip);
 	else if (houseLandedOn)
-		blit(chibiTexture, player->pos.x, player->pos.y, 0, CHIBI_SCALE);
+		blit(chibiTexture, player->pos.x, player->pos.y, 0, CHIBI_SCALE, flip);
 	else
 	{
 		int scared = isBattyScared();
@@ -698,17 +709,66 @@ static void drawBatty()
 		{
 			if (app.tickCount % 8 < 4)
 			{
-				blit(scared ? playerScaredFlapTexture : playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				blit(scared ? playerScaredFlapTexture : playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
 				flap = 0;
 			}
 			else
 			{
-				blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+				blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
 				flap = 1;
 			}
 		}
 		else
-			blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE);
+			blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
+	}
+}
+
+IntVector getMiniMapPoint(int x, int y)
+{
+	IntVector p = { ((double) x) / RIGHTMOST_ALLOWABLE * 200 + WIN_X - 210 + app.camera.x, ((double) y) / RIGHTMOST_ALLOWABLE * 200 + 40 + app.camera.y };
+	return p;
+}
+
+static void drawMiniMap()
+{
+	for (int j = 0; j < TOT_NUM_LINES; j++)
+		for (int i = 0; i < gpLengths[j] - 1; i++)
+		{
+			IntVector mini1 = getMiniMapPoint(allGp[j][i].x, allGp[j][i].y);
+			IntVector mini2 = getMiniMapPoint(allGp[j][i + 1].x, allGp[j][i + 1].y);
+			drawLine(mini1, mini2);
+		}
+
+	IntVector p = getMiniMapPoint(player->pos.x, player->pos.y);
+	drawLineColored(p, p, 255, 0, 0);
+	p.x++;
+	drawLineColored(p, p, 255, 0, 0);
+	p.y++;
+	p.x--;
+	drawLineColored(p, p, 255, 0, 0);
+	p.x++;
+	drawLineColored(p, p, 255, 0, 0);
+
+	for (int i = 0; i < NUM_OF_HOUSES; i++)
+	{
+		IntVector p = getMiniMapPoint(houses[i]->pos.x, houses[i]->pos.y);
+		drawLineColored(p, p, 255, 0, 0);
+		p.x++;
+		drawLineColored(p, p, 255, 0, 0);
+		p.x++;
+		drawLineColored(p, p, 255, 0, 0);
+		p.y--;
+		drawLineColored(p, p, 255, 0, 0);
+		p.x--;
+		drawLineColored(p, p, 255, 0, 0);
+		p.x--;
+		drawLineColored(p, p, 255, 0, 0);
+		p.y--;
+		drawLineColored(p, p, 255, 0, 0);
+		p.x++;
+		drawLineColored(p, p, 255, 0, 0);
+		p.x++;
+		drawLineColored(p, p, 255, 0, 0);
 	}
 }
 
@@ -754,12 +814,14 @@ static void draw()
 
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
 	{
-		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE);
+		blit(houseTexture, houses[i]->pos.x, houses[i]->pos.y, 0, HOUSE_SCALE, SDL_FLIP_NONE);
 	}
 
 	drawBatty();
 
 	drawText(25, 25, 255, 0, 0, TEXT_LEFT, "BLOOD ENERGY: %d", player->energy);
+
+	drawMiniMap();
 
 	if (houseLandedOn)
 		if (suckedBlood)

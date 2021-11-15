@@ -28,15 +28,19 @@ void drawLine(IntVector v1, IntVector v2)
 	SDL_RenderDrawLine(app.renderer, v1.x - app.camera.x, v1.y - app.camera.y, v2.x - app.camera.x, v2.y - app.camera.y);
 }
 
-void blit(SDL_Texture* texture, int x, int y, double rotation, float scale)
+void drawLineColored(IntVector v1, IntVector v2, Uint8 r, Uint8 g, Uint8 b)
+{
+	SDL_SetRenderDrawColor(app.renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(app.renderer, v1.x - app.camera.x, v1.y - app.camera.y, v2.x - app.camera.x, v2.y - app.camera.y);
+}
+
+void blit(SDL_Texture* texture, int x, int y, double rotation, float scale, SDL_RendererFlip flip)
 {
 	SDL_Rect dest = { x - app.camera.x , y - app.camera.y};
 	SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
 
 	dest.w = (int) (dest.w * scale);
 	dest.h = (int) (dest.h * scale);
-
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	// this is incredibly hacky but the only thing that rotates is Batty so hardcode her center
 	SDL_Point p = { 267 * scale, 400 * scale};
@@ -59,7 +63,7 @@ void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
 	int scaledW = w * scale;
 	for (int x = 0; x < WIN_X; x += scaledW)
 	{
-		blit(bg, x + app.camera.x, 0 + app.camera.y, 0, scale);
+		blit(bg, x + app.camera.x, 0 + app.camera.y, 0, scale, SDL_FLIP_NONE);
 	}
 
 	SDL_QueryTexture(bg3, NULL, NULL, &w, &h);
@@ -69,7 +73,7 @@ void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
 	//offset = (scaledW - offset);
 
 	for (int x = -offset; x < WIN_X; x += scaledW)
-		blit(bg3, x + app.camera.x, app.camera.y + (WIN_Y - h * scale), 0, scale);
+		blit(bg3, x + app.camera.x, app.camera.y + (WIN_Y - h * scale), 0, scale, SDL_FLIP_NONE);
 
 
 	SDL_QueryTexture(bg2, NULL, NULL, &w, &h);
@@ -81,6 +85,6 @@ void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
 	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "offset %d", offset);
 	for (int x = -offset; x < WIN_X; x += scaledW)
 	{
-		blit(bg2, x + app.camera.x, app.camera.y + (WIN_Y - h * scale) + 200, 0, scale);
+		blit(bg2, x + app.camera.x, app.camera.y + (WIN_Y - h * scale) + 200, 0, scale, SDL_FLIP_NONE);
 	}
 }
