@@ -135,7 +135,7 @@ static void setPlayerHitBox()
 {
 	player->hitbox[0].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
 	player->hitbox[0].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
-	player->hitbox[1].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
+	player->hitbox[1].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_RIGHT_X * BAT_SCALE);
 	player->hitbox[1].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
 	player->hitbox[2].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_RIGHT_X * BAT_SCALE);
 	player->hitbox[2].y = player->pos.y + battyHeight;
@@ -721,6 +721,13 @@ static void drawBatty()
 		else
 			blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
 	}
+#ifdef DRAW_HB
+	drawLine(player->hitbox[0], player->hitbox[1]);
+	drawLine(player->hitbox[1], player->hitbox[2]);
+	drawLine(player->hitbox[2], player->hitbox[3]);
+	drawLine(player->hitbox[3], player->hitbox[0]);
+#endif // DRAW_HB
+
 }
 
 IntVector getMiniMapPoint(int x, int y)
