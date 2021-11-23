@@ -70,5 +70,6 @@ extern void playSound(int id, int chan, int loop);
 extern void haltChannel(int chan);
 extern int areIntersecting(IntVector p1, IntVector q1, IntVector p2, IntVector q2);
 extern IntVector rotatePoint(IntVector p, IntVector center, double deg);
+extern void destroyTexture(SDL_Texture* texture);
 
 #endif // !STAGE_H_INIT

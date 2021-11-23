@@ -74,16 +74,26 @@ void initStage(void)
 	app.delegate.logic = logic;
 	app.delegate.draw = draw;
 
-	playerTexture = loadTexture("gfx/bat.png");
-	playerFlapTexture = loadTexture("gfx/bat2.png");
-	chibiTexture = loadTexture("gfx/batty.png");
-	dedChibiTexture = loadTexture("gfx/ded_batty.png");
-	playerScaredTexture = loadTexture("gfx/bat_scared.png");
-	playerScaredFlapTexture = loadTexture("gfx/bat_scared2.png");
-	houseTexture = loadTexture("gfx/house.png");
-	bgTexture = loadTexture("gfx/night-town-background-sky.png");
-	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
-	bg3Texture = loadTexture("gfx/night-town-background-clouds.png");
+	if (playerTexture == NULL)
+		playerTexture = loadTexture("gfx/bat.png");
+	if (playerFlapTexture == NULL)
+		playerFlapTexture = loadTexture("gfx/bat2.png");
+	if (chibiTexture == NULL)
+		chibiTexture = loadTexture("gfx/batty.png");
+	if (dedChibiTexture == NULL)
+		dedChibiTexture = loadTexture("gfx/ded_batty.png");
+	if (playerScaredTexture == NULL)
+		playerScaredTexture = loadTexture("gfx/bat_scared.png");
+	if (playerScaredFlapTexture == NULL)
+		playerScaredFlapTexture = loadTexture("gfx/bat_scared2.png");
+	if (houseTexture == NULL)
+		houseTexture = loadTexture("gfx/house.png");
+	if (bgTexture == NULL)
+		bgTexture = loadTexture("gfx/night-town-background-sky.png");
+	if (bg2Texture == NULL)
+		bg2Texture = loadTexture("gfx/night-town-background-forest.png");
+	if (bg3Texture == NULL)
+		bg3Texture = loadTexture("gfx/night-town-background-clouds.png");
 
 	SDL_QueryTexture(houseTexture, NULL, NULL, &houseWidth, &houseHeight);
 	houseWidth = (int)(houseWidth * HOUSE_SCALE);

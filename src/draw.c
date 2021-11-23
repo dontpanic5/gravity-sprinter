@@ -11,6 +11,11 @@ SDL_Texture* loadTexture(char* filename)
 	return texture;
 }
 
+void destroyTexture(SDL_Texture* texture)
+{
+	SDL_DestroyTexture(texture);
+}
+
 void prepareScene(void)
 {
 	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
