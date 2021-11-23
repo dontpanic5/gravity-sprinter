@@ -3,6 +3,9 @@
 
 #include "structs.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 enum Orientation
 {
 	O_COLLINEAR,

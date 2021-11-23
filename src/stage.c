@@ -141,6 +141,17 @@ static void setPlayerHitBox()
 	player->hitbox[2].y = player->pos.y + battyHeight;
 	player->hitbox[3].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
 	player->hitbox[3].y = player->pos.y + battyHeight;
+
+	IntVector center = {
+		(player->hitbox[0].x + player->hitbox[2].x) / 2,
+		(player->hitbox[0].y + player->hitbox[2].y) / 2
+	};
+
+	player->hitbox[0] = rotatePoint(player->hitbox[0], center, player->rotation);
+	player->hitbox[1] = rotatePoint(player->hitbox[1], center, player->rotation);
+	player->hitbox[2] = rotatePoint(player->hitbox[2], center, player->rotation);
+	player->hitbox[3] = rotatePoint(player->hitbox[3], center, player->rotation);
+
 }
 
 static void resetPlayer(int energy)

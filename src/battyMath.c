@@ -47,3 +47,17 @@ int areIntersecting(IntVector p1, IntVector q1, IntVector p2, IntVector q2)
 
 	return 0;
 }
+
+double degToRad(double deg)
+{
+	return deg * M_PI / 180;
+}
+
+IntVector rotatePoint(IntVector p, IntVector center, double deg)
+{
+	IntVector rotatedPoint = {
+		center.x + (p.x - center.x) * cos(degToRad(deg)) - (p.y - center.y) * sin(degToRad(deg)),
+		center.y + (p.x - center.x) * sin(degToRad(deg)) + (p.y - center.y) * cos(degToRad(deg))
+	};
+	return rotatedPoint;
+}
