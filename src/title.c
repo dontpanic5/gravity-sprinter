@@ -17,9 +17,12 @@ void initTitle()
 	app.camera.x = 0;
 	app.camera.y = 0;
 
-	batty = loadTexture("gfx/batty.png");
-	bgTexture = loadTexture("gfx/night-town-background-sky.png");
-	bg2Texture = loadTexture("gfx/night-town-background-forest.png");
+	if (batty == NULL)
+		batty = loadTexture("gfx/batty.png");
+	if (bgTexture == NULL)
+		bgTexture = loadTexture("gfx/night-town-background-sky.png");
+	if (bg2Texture == NULL)
+		bg2Texture = loadTexture("gfx/night-town-background-forest.png");
 
 	startCounter = 1;
 }
@@ -65,8 +68,10 @@ static void draw()
 	drawText(WIN_X / 2.5, 150, 255, 0, 0, TEXT_LEFT, text1b);
 	drawText(WIN_X / 2.5, 200, 255, 0, 0, TEXT_LEFT, text2);
 
-	drawText(WIN_X / 2.5, 350, 255, 0, 0, TEXT_LEFT, text4);
-	drawText(WIN_X / 2.5, 400, 255, 0, 0, TEXT_LEFT, text5);
+	drawText(WIN_X / 2.5, 300, 255, 0, 0, TEXT_LEFT, text4);
+	drawText(WIN_X / 2.5, 350, 255, 0, 0, TEXT_LEFT, text5);
 
-	drawText(WIN_X / 2.5, 500, 255, 0, 0, TEXT_LEFT, text3);
+	drawText(WIN_X / 2.5, 450, 255, 0, 0, TEXT_LEFT, text3);
+
+	//blit()
 }

@@ -27,7 +27,7 @@
 //#define MAX_ENERGY
 //#define SPAWN_HOUSE 7
 //#define NO_MUSIC
-#define DRAW_HB
+//#define DRAW_HB
 
 
 App app;
