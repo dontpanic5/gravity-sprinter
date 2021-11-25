@@ -16,7 +16,11 @@ void drawText(int x, int y, int r, int g, int b, int align, char* format, ...)
 	memset(&drawTextBuffer, '\0', sizeof(drawTextBuffer));
 
 	va_start(args, format);
+#ifdef _WIN32
 	vsprintf_s(drawTextBuffer, MAX_TEXT, format, args);
+#else
+	vsprintf(drawTextBuffer, format, args);
+#endif
 	va_end(args);
 
 	size_t len = strlen(drawTextBuffer);

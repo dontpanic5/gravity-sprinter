@@ -71,14 +71,19 @@ void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)
 		blit(bg, x + app.camera.x, 0 + app.camera.y, 0, scale, SDL_FLIP_NONE);
 	}
 
-	SDL_QueryTexture(bg3, NULL, NULL, &w, &h);
-	scaledW = w * scale;
-	int offset = SDL_GetTicks() % (scaledW * 32);
-	offset /= 32;
-	//offset = (scaledW - offset);
+	int offset = 0;
 
-	for (int x = -offset; x < WIN_X; x += scaledW)
-		blit(bg3, x + app.camera.x, app.camera.y + (WIN_Y - h * scale), 0, scale, SDL_FLIP_NONE);
+	if (bg3)
+	{
+		SDL_QueryTexture(bg3, NULL, NULL, &w, &h);
+		scaledW = w * scale;
+		offset = SDL_GetTicks() % (scaledW * 32);
+		offset /= 32;
+		//offset = (scaledW - offset);
+
+		for (int x = -offset; x < WIN_X; x += scaledW)
+			blit(bg3, x + app.camera.x, app.camera.y + (WIN_Y - h * scale), 0, scale, SDL_FLIP_NONE);
+	}
 
 
 	SDL_QueryTexture(bg2, NULL, NULL, &w, &h);

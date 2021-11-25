@@ -4,4 +4,6 @@
 #include "SDL2/SDL.h"
 #include "main.h"
 
+extern App app;
+
 #endif

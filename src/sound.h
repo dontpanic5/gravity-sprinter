@@ -5,6 +5,8 @@
 #include "logging.h"
 #include "main.h"
 
+extern App app;
+
 extern void batLog(char* format, ...);
 
 enum

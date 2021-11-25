@@ -1,11 +1,21 @@
 #include "battyMath.h"
 
+int iMin(int x, int y)
+{
+	return x < y ? x : y;
+}
+
+int iMax(int x, int y)
+{
+	return x > y ? x : y;
+}
+
 /* Given three collinear points p, q, r, the function checks if
  * point q lies on line segment 'pr' */
 static int onSegment(IntVector p, IntVector q, IntVector r)
 {
-	return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
-		q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
+	return q.x <= iMax(p.x, r.x) && q.x >= iMin(p.x, r.x) &&
+		q.y <= iMax(p.y, r.y) && q.y >= iMin(p.y, r.y);
 }
 
 /* To find orientation of ordered triplet (p, q, r) */

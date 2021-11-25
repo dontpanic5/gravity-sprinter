@@ -24,7 +24,7 @@ void doKeyUp(SDL_KeyboardEvent* event)
 			app.space = 0;
 		}
 
-		if (event->keysym.scancode == SDL_SCANCODE_T);
+		if (event->keysym.scancode == SDL_SCANCODE_T)
 		{
 			app.t = 0;
 		}

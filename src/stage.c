@@ -588,7 +588,7 @@ int willCrash()
 {
 	return player->velocity.x > SAFE_VELOCITY ||
 		player->velocity.y > SAFE_VELOCITY ||
-		(abs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter);
+		(fabs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter);
 }
 
 static int houseCollisions()
@@ -699,7 +699,7 @@ static int checkCollisions()
 	return houseCollisions() || groundCollisions();
 }
 
-static isBattyScared()
+static int isBattyScared()
 {
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
 	{
@@ -852,10 +852,16 @@ static void draw()
 	drawMiniMap();
 
 	if (houseLandedOn)
+	{
 		if (suckedBlood)
+		{
 			drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU LANDED SAFELY AND SUCKED SOME BLOOD!");
+		}
 		else
+		{
 			drawText(TEXT_X, TEXT_Y, 255, 0, 0, TEXT_CENTER, "YOU LANDED SAFELY BUT THERE IS NO MORE BLOOD TO SUCK HERE.");
+		}
+	}
 
 	if (outOfBounds)
 	{

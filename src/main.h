@@ -3,7 +3,14 @@
 
 #include <string.h>
 #include <math.h>
+#ifdef _WIN32
 #include <Windows.h>
+#endif
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif // __EMSCRIPTEN__
 
 #include "structs.h"
 #include "init.h"
@@ -28,9 +35,6 @@
 //#define SPAWN_HOUSE 7
 //#define NO_MUSIC
 //#define DRAW_HB
-
-
-App app;
 
 extern void cleanup(void);
 extern void initSDL(void);

@@ -28,9 +28,9 @@ void loadMusic(char* filename)
 	music = Mix_LoadMUS(filename);
 	if (!music)
 	{
-		char* err;
+		const char* err;
 		err = Mix_GetError();
-		batLog("load music failed %s", err);
+		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "load music failed %s", err);
 	}
 }
 
@@ -46,7 +46,10 @@ void playMusic()
 
 void playSound(int id, int chan, int loop)
 {
-	Mix_PlayChannel(chan, sounds[id], loop);
+	if (id == SND_PLAYER_FLAP)
+		Mix_FadeInChannel(chan, sounds[id], loop, 300);
+	else
+		Mix_PlayChannel(chan, sounds[id], loop);
 }
 
 void haltChannel(int chan)

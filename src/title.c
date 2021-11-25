@@ -10,6 +10,14 @@ static SDL_Texture* bg2Texture;
 
 static int startCounter = 0;
 
+#ifndef _WIN32
+void strcpy_s(char* s, int rsize_t, char* s2)
+{
+	strcpy(s, s2);
+}
+#endif // !_WIN32
+
+
 void initTitle()
 {
 	app.delegate.logic = logic;
@@ -39,7 +47,7 @@ static void logic()
 
 static void draw()
 {
-	drawBg(bgTexture, bg2Texture, 0);
+	drawBg(bgTexture, bg2Texture, NULL, 0);
 
 	IntVector sz = { 0,0 };
 	SDL_QueryTexture(batty, NULL, NULL, &sz.x, &sz.y);
