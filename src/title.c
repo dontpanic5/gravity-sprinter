@@ -4,9 +4,12 @@ static void logic(void);
 static void draw(void);
 
 static SDL_Texture* batty;
+static SDL_Texture* battyCringe;
+static SDL_Texture* battySmile;
 static SDL_Texture* bgTexture;
 static SDL_Texture* bg2Texture;
 #define BATTY_SCALE .6
+#define EXAMPLE_SCALE .3
 
 static int startCounter = 0;
 
@@ -27,6 +30,10 @@ void initTitle()
 
 	if (batty == NULL)
 		batty = loadTexture("gfx/batty.png");
+	if (battyCringe == NULL)
+		battyCringe = loadTexture("gfx/bat_scared.png");
+	if (battySmile == NULL)
+		battySmile = loadTexture("gfx/bat.png");
 	if (bgTexture == NULL)
 		bgTexture = loadTexture("gfx/night-town-background-sky.png");
 	if (bg2Texture == NULL)
@@ -52,8 +59,6 @@ static void draw()
 	IntVector sz = { 0,0 };
 	SDL_QueryTexture(batty, NULL, NULL, &sz.x, &sz.y);
 
-	int posX = (int) (WIN_X - (sz.x * BATTY_SCALE)) / 2;
-
 	blit(batty, 25, 25, 0, (float) BATTY_SCALE, SDL_FLIP_NONE);
 
 	char text1a[MAX_TEXT];
@@ -62,6 +67,7 @@ static void draw()
 	char text3[MAX_TEXT];
 	char text4[MAX_TEXT];
 	char text5[MAX_TEXT];
+	char text6[MAX_TEXT];
 
 	strcpy_s(text1a, MAX_TEXT, "LAND GENTLY ON THE HOUSES");
 	strcpy_s(text1b, MAX_TEXT, "TO SUCK BLOOD!");
@@ -72,14 +78,18 @@ static void draw()
 
 	strcpy_s(text3, MAX_TEXT, "PRESS SPACE TO PLAY!");
 
-	drawText(WIN_X / 2.5, 100, 255, 0, 0, TEXT_LEFT, text1a);
-	drawText(WIN_X / 2.5, 150, 255, 0, 0, TEXT_LEFT, text1b);
-	drawText(WIN_X / 2.5, 200, 255, 0, 0, TEXT_LEFT, text2);
+	strcpy_s(text6, MAX_TEXT, "WATCH BATTY'S EXPRESSION TO KNOW IF SHE MIGHT CRASH OR LAND SAFELY.");
 
-	drawText(WIN_X / 2.5, 300, 255, 0, 0, TEXT_LEFT, text4);
-	drawText(WIN_X / 2.5, 350, 255, 0, 0, TEXT_LEFT, text5);
+	drawText(WIN_X / 2.5, 50, 255, 0, 0, TEXT_LEFT, text1a);
+	drawText(WIN_X / 2.5, 100, 255, 0, 0, TEXT_LEFT, text1b);
+	drawText(WIN_X / 2.5, 150, 255, 0, 0, TEXT_LEFT, text2);
 
-	drawText(WIN_X / 2.5, 450, 255, 0, 0, TEXT_LEFT, text3);
+	drawText(WIN_X / 2.5, 250, 255, 0, 0, TEXT_LEFT, text4);
+	drawText(WIN_X / 2.5, 300, 255, 0, 0, TEXT_LEFT, text5);
 
-	//blit()
+	drawText(WIN_X / 2.5, 400, 255, 0, 0, TEXT_LEFT, text3);
+
+	drawText(50, 500, 255, 0, 0, TEXT_LEFT, text6);
+	blit(battyCringe, WIN_X / 2 - 200, 550, 0, EXAMPLE_SCALE, SDL_FLIP_NONE);
+	blit(battySmile, WIN_X / 2 + 50, 550, 0, EXAMPLE_SCALE, SDL_FLIP_NONE);
 }

@@ -12,8 +12,6 @@ void initSounds()
 	music = NULL;
 
 	loadSounds();
-
-	Mix_Volume(CH_WINGS, 96); // make wings quieter
 }
 
 void loadMusic(char* filename)
@@ -46,10 +44,7 @@ void playMusic()
 
 void playSound(int id, int chan, int loop)
 {
-	if (id == SND_PLAYER_FLAP)
-		Mix_FadeInChannel(chan, sounds[id], loop, 300);
-	else
-		Mix_PlayChannel(chan, sounds[id], loop);
+	Mix_PlayChannel(chan, sounds[id], loop);
 }
 
 void haltChannel(int chan)
@@ -60,6 +55,6 @@ void haltChannel(int chan)
 static void loadSounds()
 {
 	sounds[SND_PLAYER_CRASH] = Mix_LoadWAV("audio/frustrated.ogg");
-	sounds[SND_PLAYER_FLAP] = Mix_LoadWAV("audio/flap.wav");
+	sounds[SND_PLAYER_FLAP] = Mix_LoadWAV("audio/flap.ogg");
 	sounds[SND_PLAYER_LAUGH] = Mix_LoadWAV("audio/laugh.wav");
 }
