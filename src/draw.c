@@ -1,5 +1,17 @@
 #include "draw.h"
 
+static SDL_Texture* buf;
+
+void createRendTex()
+{
+	buf = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WIN_X, WIN_Y);
+}
+
+void setRendToWin()
+{
+	SDL_SetRenderTarget(app.renderer, NULL);
+}
+
 SDL_Texture* loadTexture(char* filename)
 {
 	SDL_Texture* texture;
@@ -16,15 +28,16 @@ void destroyTexture(SDL_Texture* texture)
 	SDL_DestroyTexture(texture);
 }
 
-void prepareScene(void)
-{
-	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
-	SDL_RenderClear(app.renderer);
-}
-
-void presentScene(void)
+void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 {
 	SDL_RenderPresent(app.renderer);
+
+	SDL_Rect dest = { 30, 420, 300, 250 };
+	if (pp == FACE_CAM)
+		SDL_RenderCopy(app.renderer, buf, &ppSrc, &dest);
+
+	SDL_SetRenderTarget(app.renderer, NULL);
+	SDL_RenderCopy(app.renderer, buf, NULL, NULL);
 }
 
 void drawLine(IntVector v1, IntVector v2)

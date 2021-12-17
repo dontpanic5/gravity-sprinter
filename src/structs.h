@@ -15,9 +15,15 @@ typedef struct {
 	double y;
 } DoubleVector;
 
+enum POST_PROCESS {
+	FACE_CAM,
+	NONE
+};
+typedef enum POST_PROCESS postProcess_t;
+
 typedef struct {
 	void (*logic) (void);
-	void (*draw) (void);
+	void (*draw) (postProcess_t* pp, SDL_Rect* ppSrc);
 } Delegate;
 
 typedef struct {

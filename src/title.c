@@ -1,7 +1,7 @@
 #include "title.h"
 
 static void logic(void);
-static void draw(void);
+static void draw(postProcess_t* pp, SDL_Rect* ppSrc);
 
 static SDL_Texture* batty;
 static SDL_Texture* battyCringe;
@@ -52,8 +52,10 @@ static void logic()
 	startCounter++;
 }
 
-static void draw()
+static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 {
+	*pp = NONE;
+
 	drawBg(bgTexture, bg2Texture, NULL, 0);
 
 	IntVector sz = { 0,0 };

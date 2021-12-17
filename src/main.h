@@ -33,14 +33,13 @@
 
 //#define MAX_ENERGY
 //#define SPAWN_HOUSE 7
-//#define NO_MUSIC
-//#define DRAW_HB
+#define NO_MUSIC
+#define DRAW_HB
 
 extern void cleanup(void);
 extern void initSDL(void);
 extern SDL_Texture* loadTexture(char* filename);
-extern void prepareScene(void);
-extern void presentScene(void);
+extern void presentScene(postProcess_t pp, SDL_Rect ppSrc);
 extern void doInput(void);
 extern void blit(SDL_Texture* texture, int x, int y, double rotation, float scale, SDL_RendererFlip flip);
 extern void initStage(void);

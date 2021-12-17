@@ -42,12 +42,16 @@
 #define BATTY_HITBOX_LEFT_X 63
 #define BATTY_HITBOX_TOP_Y 277
 #define BATTY_HITBOX_RIGHT_X 474
+#define BATTY_HITBOX_Y_RATIO .6
 // number of lines that comprise a house hitbox
 // the max is based on this right now
 #define HOUSE_POINTS 6
 #define HOUSE_HITBOX_P0 73
 #define HOUSE_HITBOX_P1 59
 #define HOUSE_HITBOX_P2 325
+
+#define BATTY_FACE_Y 228
+#define BATTY_FACE_W 292
 
 #define NUM_OF_HOUSES 13 // 14
 #define NUM_OF_GROUND_POINTS 33 //38
@@ -63,6 +67,7 @@
 #define BLOOD_MODIFIER 200 // use to quickly make the game easier or harder
 
 extern App app;
+//extern postProcess_t;
 
 extern void drawText(int x, int y, int r, int g, int b, int align, char* format, ...);
 extern void drawLine(IntVector v1, IntVector v2);

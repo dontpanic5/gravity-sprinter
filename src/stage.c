@@ -16,7 +16,7 @@ const int TEXT_X = WIN_X / 2;
 const int TEXT_Y = WIN_Y / 2 - 200;
 
 static void logic(void);
-static void draw(void);
+static void draw(postProcess_t* pp, SDL_Rect* ppSrc);
 static void initPlayer();
 static void initLevel();
 static void battyLogic(int colliding);
@@ -53,6 +53,12 @@ static int flap = 0;
 
 static int battyFlipped = 0;
 
+enum CRASH_TYPE {
+	CRASH_ROT = 1,
+	CRASH_VERT_VELO,
+	CRASH_HORZ_VELO
+};
+
 static int houseHeight = -1;
 static int houseWidth = -1;
 static int battyHeight = -1;
@@ -62,8 +68,12 @@ static SDL_Texture* playerTexture;
 static SDL_Texture* playerFlapTexture;
 static SDL_Texture* chibiTexture;
 static SDL_Texture* dedChibiTexture;
-static SDL_Texture* playerScaredTexture;
-static SDL_Texture* playerScaredFlapTexture;
+static SDL_Texture* playerScaredRotTexture;
+static SDL_Texture* playerScaredRotFlapTexture;
+static SDL_Texture* playerScaredVertVeloTexture;
+static SDL_Texture* playerScaredVertVeloFlapTexture;
+static SDL_Texture* playerScaredHorzVeloTexture;
+static SDL_Texture* playerScaredHorzVeloFlapTexture;
 static SDL_Texture* houseTexture;
 static SDL_Texture* bgTexture;
 static SDL_Texture* bg2Texture;
@@ -75,17 +85,25 @@ void initStage(void)
 	app.delegate.draw = draw;
 
 	if (playerTexture == NULL)
-		playerTexture = loadTexture("gfx/bat.png");
+		playerTexture = loadTexture("gfx/bat_smile.png");
 	if (playerFlapTexture == NULL)
-		playerFlapTexture = loadTexture("gfx/bat2.png");
+		playerFlapTexture = loadTexture("gfx/bat_smile_flap.png");
 	if (chibiTexture == NULL)
 		chibiTexture = loadTexture("gfx/batty.png");
 	if (dedChibiTexture == NULL)
 		dedChibiTexture = loadTexture("gfx/ded_batty.png");
-	if (playerScaredTexture == NULL)
-		playerScaredTexture = loadTexture("gfx/bat_scared.png");
-	if (playerScaredFlapTexture == NULL)
-		playerScaredFlapTexture = loadTexture("gfx/bat_scared2.png");
+	if (playerScaredRotTexture == NULL)
+		playerScaredRotTexture = loadTexture("gfx/bat_scared_rot.png");
+	if (playerScaredRotFlapTexture == NULL)
+		playerScaredRotFlapTexture = loadTexture("gfx/bat_scared_rot_flap.png");
+	if (playerScaredVertVeloTexture == NULL)
+		playerScaredVertVeloTexture = loadTexture("gfx/bat_scared_vert_velo.png");
+	if (playerScaredVertVeloFlapTexture == NULL)
+		playerScaredVertVeloFlapTexture = loadTexture("gfx/bat_scared_vert_velo_flap.png");
+	if (playerScaredHorzVeloTexture == NULL)
+		playerScaredHorzVeloTexture = loadTexture("gfx/bat_scared_horz_velo.png");
+	if (playerScaredHorzVeloFlapTexture == NULL)
+		playerScaredHorzVeloFlapTexture = loadTexture("gfx/bat_scared_horz_velo_flap.png");
 	if (houseTexture == NULL)
 		houseTexture = loadTexture("gfx/house.png");
 	if (bgTexture == NULL)
@@ -99,6 +117,7 @@ void initStage(void)
 	houseWidth = (int)(houseWidth * HOUSE_SCALE);
 	houseHeight = (int)(houseHeight * HOUSE_SCALE) - 15; // minus 15 to put it on the ground
 	SDL_QueryTexture(playerTexture, NULL, NULL, &battyWidth, &battyHeight);
+	battyHeight *= BATTY_HITBOX_Y_RATIO; // we don't want the bottom of the image because that's where her wings flap
 	battyWidth = (int)(battyWidth * BAT_SCALE);
 	battyHeight = (int)(battyHeight * BAT_SCALE);
 
@@ -198,7 +217,7 @@ static void resetPlayer(int energy)
 static void initPlayer()
 {
 	player = malloc(sizeof(Entity));
-	
+
 	resetPlayer(300 + BLOOD_MODIFIER);
 }
 
@@ -212,7 +231,7 @@ void initHouse(int i, int x, int y, int energy)
 	int hPosY = houses[i]->pos.y;
 	houses[i]->hitbox[0].x = x + 0;
 	houses[i]->hitbox[0].y = hPosY + HOUSE_HITBOX_P0 * HOUSE_SCALE;
-	houses[i]->hitbox[1].x = x +HOUSE_HITBOX_P1 * HOUSE_SCALE;
+	houses[i]->hitbox[1].x = x + HOUSE_HITBOX_P1 * HOUSE_SCALE;
 	houses[i]->hitbox[1].y = hPosY;
 	houses[i]->hitbox[2].x = x + HOUSE_HITBOX_P2 * HOUSE_SCALE;
 	houses[i]->hitbox[2].y = hPosY;
@@ -454,7 +473,7 @@ static void logic(void)
 		//batLog("landed. Pause counter: %d up: %d", landedPause, app.up);
 		if (landedPause < 60)
 		{
-			player->pos.x += (int) ceil(((double) slideDist) / 60);
+			player->pos.x += (int)ceil(((double)slideDist) / 60);
 			return;
 		}
 		if (!app.up)
@@ -586,9 +605,14 @@ static void battyLogic(int colliding)
 
 int willCrash()
 {
-	return player->velocity.x > SAFE_VELOCITY ||
-		player->velocity.y > SAFE_VELOCITY ||
-		(fabs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter);
+	if (fabs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter)
+		return CRASH_ROT;
+	if (player->velocity.y > SAFE_VELOCITY)
+		return CRASH_VERT_VELO;
+	if (player->velocity.x > SAFE_VELOCITY)
+		return CRASH_HORZ_VELO;
+
+	return 0;
 }
 
 static int houseCollisions()
@@ -719,28 +743,55 @@ static void drawBatty()
 	if (battyFlipped)
 		flip = SDL_FLIP_HORIZONTAL;
 
+	SDL_Texture* tex = NULL;
+
 	if (crashed)
 		blit(dedChibiTexture, player->pos.x, player->pos.y + 40, -90, CHIBI_SCALE, flip);
 	else if (houseLandedOn)
 		blit(chibiTexture, player->pos.x, player->pos.y, 0, CHIBI_SCALE, flip);
 	else
 	{
-		int scared = isBattyScared();
-		if (playingFlapSound)
+		int scaredVal = isBattyScared();
+		if (playingFlapSound && app.tickCount % 8 < 4)
 		{
-			if (app.tickCount % 8 < 4)
+			switch (scaredVal)
 			{
-				blit(scared ? playerScaredFlapTexture : playerFlapTexture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
-				flap = 0;
+			case CRASH_ROT:
+				tex = playerScaredRotFlapTexture;
+				break;
+			case CRASH_VERT_VELO:
+				tex = playerScaredHorzVeloFlapTexture;
+				break;
+			case CRASH_HORZ_VELO:
+				tex = playerScaredVertVeloFlapTexture;
+				break;
+			case 0:
+				tex = playerFlapTexture;
+				break;
 			}
-			else
-			{
-				blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
-				flap = 1;
-			}
+			blit(tex, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
+			flap = 0;
 		}
 		else
-			blit(scared ? playerScaredTexture : player->texture, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
+		{
+			switch (scaredVal)
+			{
+			case CRASH_ROT:
+				tex = playerScaredRotTexture;
+				break;
+			case CRASH_VERT_VELO:
+				tex = playerScaredHorzVeloTexture;
+				break;
+			case CRASH_HORZ_VELO:
+				tex = playerScaredVertVeloTexture;
+				break;
+			case 0:
+				tex = player->texture;
+				break;
+			}
+			flap = 1;
+		}
+		blit(tex, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
 	}
 #ifdef DRAW_HB
 	drawLine(player->hitbox[0], player->hitbox[1]);
@@ -753,7 +804,7 @@ static void drawBatty()
 
 IntVector getMiniMapPoint(int x, int y)
 {
-	IntVector p = { ((double) x) / RIGHTMOST_ALLOWABLE * 200 + WIN_X - 210 + app.camera.x, ((double) y) / RIGHTMOST_ALLOWABLE * 200 + 40 + app.camera.y };
+	IntVector p = { ((double)x) / RIGHTMOST_ALLOWABLE * 200 + WIN_X - 210 + app.camera.x, ((double)y) / RIGHTMOST_ALLOWABLE * 200 + 40 + app.camera.y };
 	return p;
 }
 
@@ -800,8 +851,23 @@ static void drawMiniMap()
 	}
 }
 
-static void draw()
+static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 {
+	*pp = FACE_CAM;
+
+	ppSrc->x = player->pos.x - app.camera.x;
+	if (battyFlipped && !crashed)
+		ppSrc->x += battyWidth - BATTY_FACE_W * BAT_SCALE;
+	ppSrc->y = player->pos.y - app.camera.y + BATTY_FACE_Y * BAT_SCALE;
+	if (houseLandedOn)
+	{
+		ppSrc->y -= 40;
+		if (!battyFlipped)
+			ppSrc->x += 20;
+	}
+	ppSrc->w = BATTY_FACE_W * BAT_SCALE;
+	ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
+
 	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
 
 	for (int j = 0; j < TOT_NUM_LINES; j++)
@@ -850,6 +916,8 @@ static void draw()
 	drawText(25, 25, 255, 0, 0, TEXT_LEFT, "BLOOD ENERGY: %d", player->energy);
 
 	drawMiniMap();
+
+	drawText(35, WIN_Y - 30, 255, 0, 0, TEXT_LEFT, "BATTY FACE CAM");
 
 	if (houseLandedOn)
 	{
