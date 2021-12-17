@@ -8,6 +8,8 @@ EM_BOOL one_iter()
 void one_iter()
 #endif // __EMSCRIPTEN__
 {
+	prepareScene();
+
 	doInput();
 
 	app.delegate.logic();

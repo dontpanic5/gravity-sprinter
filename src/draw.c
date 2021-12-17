@@ -28,6 +28,11 @@ void destroyTexture(SDL_Texture* texture)
 	SDL_DestroyTexture(texture);
 }
 
+void prepareScene()
+{
+	SDL_SetRenderTarget(app.renderer, buf);
+}
+
 void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 {
 	SDL_RenderPresent(app.renderer);

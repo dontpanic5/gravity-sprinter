@@ -729,9 +729,10 @@ static int isBattyScared()
 	{
 		int x = abs(houses[i]->pos.x - player->pos.x);
 		int y = abs(houses[i]->pos.y - player->pos.y);
-		if (sqrt(x * x + y * y) < 400 && willCrash() && player->velocity.y > 0)
+		int crashType = willCrash();
+		if (sqrt(x * x + y * y) < 400 && crashType && player->velocity.y > 0)
 		{
-			return 1;
+			return crashType;
 		}
 	}
 	return 0;
