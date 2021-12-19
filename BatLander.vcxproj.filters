@@ -45,6 +45,9 @@
     <ClCompile Include="src\battyMath.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\instructions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\battyMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\instructions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -172,8 +172,8 @@ static void setPlayerHitBox()
 	player->hitbox[3].y = player->pos.y + battyHeight;
 
 	IntVector center = {
-		(player->hitbox[0].x + player->hitbox[2].x) / 2,
-		(player->hitbox[0].y + player->hitbox[2].y) / 2
+		player->pos.x + 267 * BAT_SCALE,
+		player->pos.y + 400 * BAT_SCALE
 	};
 
 	player->hitbox[0] = rotatePoint(player->hitbox[0], center, player->rotation);
@@ -603,9 +603,9 @@ static void battyLogic(int colliding)
 	setPlayerHitBox();
 }
 
-int willCrash()
+int willCrash(int useCounter)
 {
-	if (fabs(player->rotation) > SAFE_ROTATION && !launchingFromHouseCounter)
+	if (fabs(player->rotation) > SAFE_ROTATION && (useCounter ? !launchingFromHouseCounter : 1))
 		return CRASH_ROT;
 	if (player->velocity.y > SAFE_VELOCITY)
 		return CRASH_VERT_VELO;
@@ -655,7 +655,7 @@ static int houseCollisions()
 
 		if (thisC)
 		{
-			if (willCrash())
+			if (willCrash(1))
 			{
 				crashed = 1;
 				playSound(SND_PLAYER_CRASH, CH_PLAYER, 0);
@@ -729,8 +729,8 @@ static int isBattyScared()
 	{
 		int x = abs(houses[i]->pos.x - player->pos.x);
 		int y = abs(houses[i]->pos.y - player->pos.y);
-		int crashType = willCrash();
-		if (sqrt(x * x + y * y) < 400 && crashType && player->velocity.y > 0)
+		int crashType = willCrash(0);
+		if (sqrt(x * x + y * y) < 400 && crashType && player->velocity.y >= 0)
 		{
 			return crashType;
 		}
@@ -770,7 +770,6 @@ static void drawBatty()
 				tex = playerFlapTexture;
 				break;
 			}
-			blit(tex, player->pos.x, player->pos.y, player->rotation, BAT_SCALE, flip);
 			flap = 0;
 		}
 		else
@@ -781,10 +780,10 @@ static void drawBatty()
 				tex = playerScaredRotTexture;
 				break;
 			case CRASH_VERT_VELO:
-				tex = playerScaredHorzVeloTexture;
+				tex = playerScaredVertVeloTexture;
 				break;
 			case CRASH_HORZ_VELO:
-				tex = playerScaredVertVeloTexture;
+				tex = playerScaredHorzVeloTexture;
 				break;
 			case 0:
 				tex = player->texture;

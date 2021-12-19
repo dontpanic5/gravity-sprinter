@@ -161,6 +161,7 @@
     <ClCompile Include="src\draw.c" />
     <ClCompile Include="src\init.c" />
     <ClCompile Include="src\input.c" />
+    <ClCompile Include="src\instructions.c" />
     <ClCompile Include="src\logging.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\battyMath.c" />
@@ -173,6 +174,7 @@
     <ClInclude Include="src\draw.h" />
     <ClInclude Include="src\init.h" />
     <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\instructions.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\battyMath.h" />
