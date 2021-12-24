@@ -3,7 +3,11 @@
 
 #include "draw.h"
 #include "input.h"
+#ifdef SDL_DIR
 #include "SDL2/SDL.h"
+#else
+#include "SDL.h"
+#endif
 #include "stage.h"
 #include "instructions.h"
 

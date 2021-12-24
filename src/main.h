@@ -12,6 +12,8 @@
 #include <emscripten/html5.h>
 #endif // __EMSCRIPTEN__
 
+//#define SDL_DIR
+
 #include "structs.h"
 #include "init.h"
 #include "draw.h"
@@ -33,7 +35,7 @@
 
 //#define MAX_ENERGY
 //#define SPAWN_HOUSE 7
-#define NO_MUSIC
+//#define NO_MUSIC
 //#define DRAW_HB
 
 extern void cleanup(void);

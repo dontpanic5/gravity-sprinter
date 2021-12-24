@@ -1,7 +1,11 @@
 #if !defined(STRUCTS_H_INCLUDED)
 #define STRUCTS_H_INCLUDED
 
+#ifdef SDL_DIR
 #include "SDL2/SDL.h"
+#else
+#include "SDL.h"
+#endif
 
 #define MAX_HITBOX_LINES 6
 

@@ -1,7 +1,12 @@
 #if !defined(INIT_H_INCLUDED)
 #define INIT_H_INCLUDED
 
+#include <stdio.h>
+#ifdef SDL_DIR
 #include "SDL2/SDL.h"
+#else
+#include "SDL.h"
+#endif
 #include "SDL_mixer.h"
 #include "SDL_image.h"
 #include "main.h"
