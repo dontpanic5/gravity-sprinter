@@ -65,7 +65,7 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 	blit(batty, 25, 25, 0, (float) BATTY_SCALE, SDL_FLIP_NONE);
 
 	char text3[MAX_TEXT];
-	char text3[MAX_TEXT];
+	//char text3[MAX_TEXT];
 
 	strcpy_s(text3, MAX_TEXT, "PRESS SPACE TO PLAY!");
 
