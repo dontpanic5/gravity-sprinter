@@ -13,13 +13,14 @@
 
 // acceleration of gravity
 #define GRAVITY_METERS 9.8
+//#define GRAVITY_METERS 1.62
 
 // tweak this to get a good terminal velocity.
 // Since the bat is using its wings, it should be pretty low since the bat glides
 #define DESIRED_TERMINAL_VELOCITY_METERS -5
 
-// TODO would be cool to get a real number for this
 #define FLAP_FORCE_METERS -20
+//#define FLAP_FORCE_METERS -10
 
 // how many degrees of rotation are possible in a second
 #define ROTATION_SPEED 90
@@ -36,6 +37,8 @@
 #define HOUSE_SCALE .5
 #define BAT_SCALE .20
 #define CHIBI_SCALE .15
+
+#define SCREEN_BUFFER 100
 
 // number of lines that make a batty hitbox
 #define BATTY_POINTS 4
@@ -79,5 +82,9 @@ extern void haltChannel(int chan);
 extern int areIntersecting(IntVector p1, IntVector q1, IntVector p2, IntVector q2);
 extern IntVector rotatePoint(IntVector p, IntVector center, double deg);
 extern void destroyTexture(SDL_Texture* texture);
+extern void prepareMiniMap(SDL_Texture** tex);
+extern void setRendToWin(void);
+extern void presentMiniMap(SDL_Texture* tex);
+extern void renderCopy(SDL_Texture* tex, SDL_Rect rect);
 
 #endif // !STAGE_H_INIT

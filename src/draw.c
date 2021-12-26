@@ -7,6 +7,17 @@ void createRendTex()
 	buf = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WIN_X, WIN_Y);
 }
 
+void prepareMiniMap(SDL_Texture** tex)
+{
+	*tex = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 300, 200);
+	SDL_SetTextureBlendMode(*tex, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderTarget(app.renderer, *tex);
+	SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_NONE);
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 0);
+	SDL_RenderFillRect(app.renderer, NULL);
+	//SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_BLEND);
+}
+
 void setRendToWin()
 {
 	SDL_SetRenderTarget(app.renderer, NULL);
@@ -33,6 +44,11 @@ void prepareScene()
 	SDL_SetRenderTarget(app.renderer, buf);
 }
 
+void presentMiniMap(SDL_Texture* tex)
+{
+	SDL_RenderPresent(app.renderer);
+}
+
 void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 {
 	SDL_RenderPresent(app.renderer);
@@ -43,6 +59,11 @@ void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 
 	SDL_SetRenderTarget(app.renderer, NULL);
 	SDL_RenderCopy(app.renderer, buf, NULL, NULL);
+}
+
+void renderCopy(SDL_Texture* tex, SDL_Rect rect)
+{
+	SDL_RenderCopy(app.renderer, tex, NULL, &rect);
 }
 
 void drawLine(IntVector v1, IntVector v2)

@@ -25,6 +25,7 @@ static void resetStage(void);
 static void stopFlapping();
 static void resetState();
 static void resetPlayer(int energy);
+static void drawMiniMap(void);
 
 static Entity* player;
 static Entity* houses[NUM_OF_HOUSES];
@@ -78,6 +79,7 @@ static SDL_Texture* houseTexture;
 static SDL_Texture* bgTexture;
 static SDL_Texture* bg2Texture;
 static SDL_Texture* bg3Texture;
+static SDL_Texture* miniMapTexture;
 
 void initStage(void)
 {
@@ -134,6 +136,11 @@ void initStage(void)
 	resetStage();
 
 	initLevel();
+
+	prepareMiniMap(&miniMapTexture);
+	drawMiniMap();
+	presentMiniMap(miniMapTexture);
+	setRendToWin();
 
 	initPlayer();
 }
@@ -730,7 +737,7 @@ static int isBattyScared()
 		int x = abs(houses[i]->pos.x - player->pos.x);
 		int y = abs(houses[i]->pos.y - player->pos.y);
 		int crashType = willCrash(0);
-		if (sqrt(x * x + y * y) < 400 && crashType && player->velocity.y >= 0)
+		if (sqrt(x * x + y * y) < 400 && crashType)
 		{
 			return crashType;
 		}
@@ -804,7 +811,7 @@ static void drawBatty()
 
 IntVector getMiniMapPoint(int x, int y)
 {
-	IntVector p = { ((double)x) / RIGHTMOST_ALLOWABLE * 200 + WIN_X - 210 + app.camera.x, ((double)y) / RIGHTMOST_ALLOWABLE * 200 + 40 + app.camera.y };
+	IntVector p = { ((double)x) / RIGHTMOST_ALLOWABLE * 290, ((double)y) / RIGHTMOST_ALLOWABLE * 290};
 	return p;
 }
 
@@ -817,16 +824,6 @@ static void drawMiniMap()
 			IntVector mini2 = getMiniMapPoint(allGp[j][i + 1].x, allGp[j][i + 1].y);
 			drawLine(mini1, mini2);
 		}
-
-	IntVector p = getMiniMapPoint(player->pos.x, player->pos.y);
-	drawLineColored(p, p, 255, 0, 0);
-	p.x++;
-	drawLineColored(p, p, 255, 0, 0);
-	p.y++;
-	p.x--;
-	drawLineColored(p, p, 255, 0, 0);
-	p.x++;
-	drawLineColored(p, p, 255, 0, 0);
 
 	for (int i = 0; i < NUM_OF_HOUSES; i++)
 	{
@@ -870,10 +867,30 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 
 	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
 
+
+	SDL_Rect screen = {
+		app.camera.x - SCREEN_BUFFER,
+		app.camera.y - SCREEN_BUFFER,
+		WIN_X + SCREEN_BUFFER * 2,
+		WIN_Y + SCREEN_BUFFER * 2
+	};
+
 	for (int j = 0; j < TOT_NUM_LINES; j++)
 		for (int i = 0; i < gpLengths[j] - 1; i++)
 		{
-			// draw three lines to make it thicc
+			int x1 = allGp[j][i].x;
+			int y1 = allGp[j][i].y;
+			int x2 = allGp[j][i + 1].x;
+			int y2 = allGp[j][i + 1].y;
+			SDL_bool onScreen = SDL_IntersectRectAndLine(
+				&screen,
+				&x1,
+				&y1,
+				&x2,
+				&y2
+			);
+			if (!onScreen)
+				continue;
 
 			drawLine(allGp[j][i], allGp[j][i + 1]);
 			allGp[j][i].y++;
@@ -915,9 +932,23 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 
 	drawText(25, 25, 255, 0, 0, TEXT_LEFT, "BLOOD ENERGY: %d", player->energy);
 
-	drawMiniMap();
-
 	drawText(35, WIN_Y - 30, 255, 0, 0, TEXT_LEFT, "BATTY FACE CAM");
+
+	IntVector miniMapTrans = { WIN_X - 280 + app.camera.x, 40 + app.camera.y };
+	blit(miniMapTexture, miniMapTrans.x, miniMapTrans.y, 0, 1, SDL_FLIP_NONE);
+
+	IntVector p = getMiniMapPoint(player->pos.x, player->pos.y);
+	p.x += miniMapTrans.x;
+	p.y += miniMapTrans.y;
+	
+	drawLineColored(p, p, 255, 0, 0);
+	p.x++;
+	drawLineColored(p, p, 255, 0, 0);
+	p.y++;
+	p.x--;
+	drawLineColored(p, p, 255, 0, 0);
+	p.x++;
+	drawLineColored(p, p, 255, 0, 0);
 
 	if (houseLandedOn)
 	{

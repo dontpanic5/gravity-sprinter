@@ -2,6 +2,23 @@
 
 App app;
 
+static long then;
+static float frRemainder;
+
+static void capFrameRate()
+{
+	long wait = 16 + frRemainder;
+	frRemainder -= (int)frRemainder;
+	long frameTime = SDL_GetTicks() - then;
+	wait -= frameTime;
+	if (wait < 1)
+		wait = 1;
+	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "wait: %f", wait);
+	SDL_Delay(wait);
+	frRemainder += 0.667;
+	then = SDL_GetTicks();
+}
+
 #ifdef __EMSCRIPTEN__
 EM_BOOL one_iter()
 #else
@@ -22,6 +39,8 @@ void one_iter()
 	presentScene(pp, ppSrc);
 
 	++app.tickCount;
+
+	capFrameRate();
 
 #ifdef __EMSCRIPTEN__
 	return EM_TRUE;
@@ -54,14 +73,15 @@ int main()
 
 	initTitle();
 
+	then = SDL_GetTicks();
+	frRemainder = 0;
+
 #ifdef __EMSCRIPTEN__
 	emscripten_request_animation_frame_loop(one_iter, 0);
 #else
 	while (1)
 	{
 		one_iter();
-
-		SDL_Delay(GAME_LOOP_DELAY);
 	}
 #endif
 

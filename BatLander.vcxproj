@@ -73,25 +73,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Nate\source\repos\SDL2-2.0.16\include;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Nate\source\repos\SDL2-2.0.16\lib\x64;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Nate\Documents\SDL2-2.0.18\include;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Nate\Documents\SDL2-2.0.18\lib\x64;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Nate\source\repos\SDL2-2.0.16\include;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Nate\source\repos\SDL2-2.0.16\lib\x64;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Nate\Documents\SDL2-2.0.18\include;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Nate\Documents\SDL2-2.0.18\lib\x64;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Nate\source\repos\SDL2-2.0.16\include;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Nate\source\repos\SDL2-2.0.16\lib\x64;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Nate\Documents\SDL2-2.0.18\include;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Nate\Documents\SDL2-2.0.18\lib\x64;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Nate\source\repos\SDL2-2.0.16\include;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Nate\source\repos\SDL2-2.0.16\lib\x64;C:\Users\Nate\source\repos\BatLander\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Nate\Documents\SDL2-2.0.18\include;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\include;C:\Users\Nate\source\repos\BatLander\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Nate\Documents\SDL2-2.0.18\lib\x64;C:\Users\Nate\Documents\SDL2_mixer-2.0.4\lib\x64;C:\Users\Nate\source\repos\BatLander\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

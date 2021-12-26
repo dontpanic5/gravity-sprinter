@@ -53,40 +53,18 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 
 	drawBg(bgTexture, bg2Texture, NULL, 0);
 
-	char text1[MAX_TEXT];
-	char text2[MAX_TEXT];
-	char text3[MAX_TEXT];
-	char text4[MAX_TEXT];
-	char text5[MAX_TEXT];
-	char textRot[MAX_TEXT];
-	char textFall[MAX_TEXT];
-	char textSideways[MAX_TEXT];
-	char textAllGood[MAX_TEXT];
+	drawText(50, 50, 255, 0, 0, TEXT_LEFT, "LAND GENTLY ON THE HOUSES TO SUCK BLOOD!");
+	drawText(50, 100, 255, 0, 0, TEXT_LEFT, "SUCKING BLOOD GIVES YOU BLOOD ENERGY!");
+	drawText(50, 200, 255, 0, 0, TEXT_LEFT, "USE UP KEY TO FLY.");
+	drawText(50, 250, 255, 0, 0, TEXT_LEFT, "LEFT AND RIGHT KEYS TO ROTATE.");
+	drawText(50, 350, 255, 0, 0, TEXT_LEFT, "WATCH BATTY'S EXPRESSION TO KNOW IF SHE MIGHT CRASH OR LAND SAFELY.");
 
-	strcpy_s(text1, MAX_TEXT, "LAND GENTLY ON THE HOUSES TO SUCK BLOOD!");
-	strcpy_s(text2, MAX_TEXT, "SUCKING BLOOD GIVES YOU BLOOD ENERGY!");
+	drawText(50, 425, 255, 0, 0, TEXT_LEFT, "TOO ROTATED");
+	drawText(50 + WIN_X / 5, 425, 255, 0, 0, TEXT_LEFT, "FALLING TOO FAST");
+	drawText(50 + WIN_X / 5 * 2.5, 425, 255, 0, 0, TEXT_LEFT, "SIDEWAYS TOO FAST");
+	drawText(50 + WIN_X / 5 * 4, 425, 255, 0, 0, TEXT_LEFT, "ALL GOOD");
 
-	strcpy_s(text3, MAX_TEXT, "USE UP KEY TO FLY.");
-	strcpy_s(text4, MAX_TEXT, "LEFT AND RIGHT KEYS TO ROTATE.");
-
-	strcpy_s(text5, MAX_TEXT, "WATCH BATTY'S EXPRESSION TO KNOW IF SHE MIGHT CRASH OR LAND SAFELY.");
-
-	strcpy_s(textRot, MAX_TEXT, "TOO ROTATED");
-	strcpy_s(textFall, MAX_TEXT, "FALLING TOO FAST");
-	strcpy_s(textSideways, MAX_TEXT, "SIDEWAYS TOO FAST");
-	strcpy_s(textAllGood, MAX_TEXT, "ALL GOOD");
-
-
-	drawText(50, 50, 255, 0, 0, TEXT_LEFT, text1);
-	drawText(50, 100, 255, 0, 0, TEXT_LEFT, text2);
-	drawText(50, 200, 255, 0, 0, TEXT_LEFT, text3);
-	drawText(50, 250, 255, 0, 0, TEXT_LEFT, text4);
-	drawText(50, 350, 255, 0, 0, TEXT_LEFT, text5);
-
-	drawText(50, 425, 255, 0, 0, TEXT_LEFT, textRot);
-	drawText(50 + WIN_X / 5, 425, 255, 0, 0, TEXT_LEFT, textFall);
-	drawText(50 + WIN_X / 5 * 2.5, 425, 255, 0, 0, TEXT_LEFT, textSideways);
-	drawText(50 + WIN_X / 5 * 4, 425, 255, 0, 0, TEXT_LEFT, textAllGood);
+	drawText(WIN_X - 50, 150, 255, 0, 0, TEXT_RIGHT, "PRESS SPACE TO PLAY!");
 	
 	blit(battyScaredRot, 75, 475, 15 + riseFall, BATTY_SCALE, SDL_FLIP_NONE);
 	blit(battyScaredVert, 100 + WIN_X / 5, 475 + riseFall * 1.75, 0, BATTY_SCALE, SDL_FLIP_NONE);
