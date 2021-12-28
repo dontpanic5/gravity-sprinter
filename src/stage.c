@@ -555,11 +555,10 @@ static void battyLogic(int colliding)
 	double playerDrag = player->velocity.y * magicDragNumber;
 	playerAcceleration.y += playerDrag;
 
-	if (app.right)
+	if (app.right && player->rotation < 85)
 		player->rotation += ROTATION_TICK;
-	if (app.left)
+	if (app.left && player->rotation > -85)
 		player->rotation -= ROTATION_TICK;
-	// TODO at this point I might want to bound the possible rotation values
 
 	if (app.up && player->energy > 0)
 	{
