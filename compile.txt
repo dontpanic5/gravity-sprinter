@@ -19,11 +19,9 @@ SDL_SetRenderTarget: https://wiki.libsdl.org/SDL_SetRenderTarget
 
 To go back to the window as the render target, you would just call SDL_SetRenderTarget(renderer, NULL)
 
-bigger minimap
 
-gravity selection
+limit rotation
 
-red shaking face
 upgrade face
 
 trains

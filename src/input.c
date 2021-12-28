@@ -28,6 +28,11 @@ void doKeyUp(SDL_KeyboardEvent* event)
 		{
 			app.t = 0;
 		}
+
+		if (event->keysym.scancode == SDL_SCANCODE_G)
+		{
+			app.g = 0;
+		}
 	}
 }
 
@@ -58,6 +63,11 @@ void doKeyDown(SDL_KeyboardEvent* event)
 		if (event->keysym.scancode == SDL_SCANCODE_T)
 		{
 			app.t = 1;
+		}
+
+		if (event->keysym.scancode == SDL_SCANCODE_G)
+		{
+			app.g = 1;
 		}
 	}
 }

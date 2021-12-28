@@ -25,6 +25,13 @@ enum POST_PROCESS {
 };
 typedef enum POST_PROCESS postProcess_t;
 
+enum GRAVITY {
+	G_EARTH,
+	G_MOON,
+};
+typedef enum GRAVITY Gravity;
+#define LAST_G 1
+
 typedef struct {
 	void (*logic) (void);
 	void (*draw) (postProcess_t* pp, SDL_Rect* ppSrc);
@@ -40,10 +47,13 @@ typedef struct {
 	int left;
 	int space;
 	int t;
+	int g;
 
 	int tickCount;
 
 	int lastHouse;
+
+	Gravity gravity;
 } App;
 
 typedef struct {

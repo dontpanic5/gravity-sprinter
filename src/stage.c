@@ -5,12 +5,12 @@
 
 const double ROTATION_TICK = ROTATION_SPEED * GAME_LOOP_FRACTION;
 
-const double GRAVITY = GRAVITY_METERS * M_TO_P;
-const int FLAP_FORCE = FLAP_FORCE_METERS * M_TO_P;
+double gravity;
+int flapForce;
 
 // we work backwards to get the drag force instead of computing it. Too much work!
 // this gives us a magic number that is our computed drag that gives us our desired terminal velocity.
-double const MAGIC_DRAG_NUMBER = GRAVITY_METERS / DESIRED_TERMINAL_VELOCITY_METERS;
+double magicDragNumber;
 
 const int TEXT_X = WIN_X / 2;
 const int TEXT_Y = WIN_Y / 2 - 200;
@@ -85,6 +85,20 @@ void initStage(void)
 {
 	app.delegate.logic = logic;
 	app.delegate.draw = draw;
+
+	switch (app.gravity)
+	{
+	case G_MOON:
+		gravity = GRAVITY_METERS_MOON * M_TO_P;
+		flapForce = FLAP_FORCE_METERS_MOON * M_TO_P;
+		magicDragNumber = GRAVITY_METERS_MOON / DESIRED_TERMINAL_VELOCITY_METERS;
+		break;
+	case G_EARTH:
+	default:
+		gravity = GRAVITY_METERS * M_TO_P;
+		flapForce = FLAP_FORCE_METERS * M_TO_P;
+		magicDragNumber = GRAVITY_METERS / DESIRED_TERMINAL_VELOCITY_METERS;
+	}
 
 	if (playerTexture == NULL)
 		playerTexture = loadTexture("gfx/bat_smile.png");
@@ -537,8 +551,8 @@ void stopFlapping()
 static void battyLogic(int colliding)
 {
 	// track player's acceleration this frame. Always start with gravity
-	DoubleVector playerAcceleration = { 0, GRAVITY };
-	double playerDrag = player->velocity.y * MAGIC_DRAG_NUMBER;
+	DoubleVector playerAcceleration = { 0, gravity };
+	double playerDrag = player->velocity.y * magicDragNumber;
 	playerAcceleration.y += playerDrag;
 
 	if (app.right)
@@ -558,8 +572,8 @@ static void battyLogic(int colliding)
 		// TODO I have the x accel working from 90 to 180 but the y is messed up in that range
 		// TODO I also need to check negative rotations
 		// subtract on the x axis
-		playerAcceleration.x -= sin(rot / 180) * FLAP_FORCE;
-		playerAcceleration.y += cos(rot / 180) * FLAP_FORCE;
+		playerAcceleration.x -= sin(rot / 180) * flapForce;
+		playerAcceleration.y += cos(rot / 180) * flapForce;
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Accel: X Calc: %f", sin(rot / 180));
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Accel: X: %f Y: %f ROT: %f", playerAcceleration.x, playerAcceleration.y, rot);
 
@@ -865,7 +879,12 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 	ppSrc->w = BATTY_FACE_W * BAT_SCALE;
 	ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
 
-	drawBg(bgTexture, bg2Texture, bg3Texture, player->pos.x);
+	drawBg(
+		bgTexture,
+		app.gravity == G_EARTH ? bg2Texture : NULL,
+		app.gravity == G_EARTH ? bg3Texture : NULL,
+		player->pos.x
+	);
 
 
 	SDL_Rect screen = {

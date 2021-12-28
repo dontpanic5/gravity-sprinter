@@ -11,6 +11,7 @@ static SDL_Texture* logo;
 #define EXAMPLE_SCALE .3
 
 static int startCounter = 0;
+static int gChangeCounter = 15;
 
 #ifndef _WIN32
 void strcpy_s(char* s, int rsize_t, char* s2)
@@ -43,12 +44,24 @@ static void logic()
 {
 	doInput();
 
-	// TODO logic to move to instructions
-
 	if (app.space && startCounter > 30)
 		initStage();
 	else if (app.t && startCounter > 30)
 		initInstructions();
+	
+	if (gChangeCounter < 15)
+		gChangeCounter--;
+	if (gChangeCounter == 0)
+		gChangeCounter = 15;
+
+	if (app.g && gChangeCounter == 15)
+	{
+		if (app.gravity < LAST_G)
+			app.gravity++;
+		else
+			app.gravity = 0;
+		gChangeCounter--;
+	}
 
 	startCounter++;
 }
@@ -59,10 +72,33 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 
 	drawBg(bgTexture, bg2Texture, NULL, 0);
 
-	blit(batty, -25, 25, 0, (float) BATTY_SCALE, SDL_FLIP_NONE);
+	blit(batty, -25, 25, 0, (float)BATTY_SCALE, SDL_FLIP_NONE);
 
 	drawText(WIN_X / 2.5, 400, 255, 0, 0, TEXT_LEFT, "PRESS SPACE TO PLAY!");
 	drawText(WIN_X / 2.5, 450, 255, 0, 0, TEXT_LEFT, "PRESS T FOR INSTRUCTIONS.");
+
+	char gravityStr[MAX_TEXT];
+	switch (app.gravity)
+	{
+	case G_EARTH:
+#ifdef _WIN32
+		strcpy_s(gravityStr, sizeof("EARTH"), "EARTH");
+#else
+		strcpy(gravityStr, "EARTH");
+#endif // _WIN32
+		break;
+	case G_MOON:
+#ifdef _WIN32
+		strcpy_s(gravityStr, sizeof("MOON"), "MOON");
+#else
+		strcpy(gravityStr, "MOON");
+#endif
+		break;
+	default:
+		*gravityStr = NULL;
+	}
+	drawText(WIN_X / 2.5, 550, 255, 0, 0, TEXT_LEFT, "GRAVITY: %s", gravityStr);
+	drawText(WIN_X / 2.5, 600, 255, 0, 0, TEXT_LEFT, "PRESS G TO CHANGE GRAVITY");
 
 	blit(logo, 400, 50, 0, 1, SDL_FLIP_NONE);
 }

@@ -10,6 +10,7 @@
 #endif
 #include "stage.h"
 #include "instructions.h"
+#include "structs.h"
 
 extern App app;
 

@@ -36,8 +36,8 @@ static void logic()
 {
 	doInput();
 
-	if (app.space)
-		initStage();
+	if (app.t)
+		initTitle();
 
 	riseFall = riseFall + (isRising ? -1.2 : 1.5);
 
@@ -64,7 +64,7 @@ static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
 	drawText(50 + WIN_X / 5 * 2.5, 425, 255, 0, 0, TEXT_LEFT, "SIDEWAYS TOO FAST");
 	drawText(50 + WIN_X / 5 * 4, 425, 255, 0, 0, TEXT_LEFT, "ALL GOOD");
 
-	drawText(WIN_X - 50, 150, 255, 0, 0, TEXT_RIGHT, "PRESS SPACE TO PLAY!");
+	drawText(WIN_X - 50, 150, 255, 0, 0, TEXT_RIGHT, "PRESS T TO RETURN.");
 	
 	blit(battyScaredRot, 75, 475, 15 + riseFall, BATTY_SCALE, SDL_FLIP_NONE);
 	blit(battyScaredVert, 100 + WIN_X / 5, 475 + riseFall * 1.75, 0, BATTY_SCALE, SDL_FLIP_NONE);

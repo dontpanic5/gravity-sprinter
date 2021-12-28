@@ -28,6 +28,8 @@ void initSDL()
 		batLog("Couldn't initialize SDL Mixer");
 	}
 	Mix_AllocateChannels(8);
+
+	app.gravity = G_EARTH;
 }
 
 void cleanup()

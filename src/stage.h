@@ -13,14 +13,15 @@
 
 // acceleration of gravity
 #define GRAVITY_METERS 9.8
-//#define GRAVITY_METERS 1.62
+#define GRAVITY_METERS_MOON 1.62
 
 // tweak this to get a good terminal velocity.
 // Since the bat is using its wings, it should be pretty low since the bat glides
 #define DESIRED_TERMINAL_VELOCITY_METERS -5
+#define DESIRED_TERMINAL_VELOCITY_METERS_MOON -10
 
 #define FLAP_FORCE_METERS -20
-//#define FLAP_FORCE_METERS -10
+#define FLAP_FORCE_METERS_MOON -5
 
 // how many degrees of rotation are possible in a second
 #define ROTATION_SPEED 90
