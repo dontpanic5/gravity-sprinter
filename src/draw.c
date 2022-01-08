@@ -1,11 +1,10 @@
 #include "draw.h"
 
-static SDL_Texture* buf;
-
-void createRendTex()
-{
-	buf = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WIN_X, WIN_Y);
-}
+static const SDL_Rect DEST = { 30, 420, 300, 250 };
+static DoubleVector ppScale;
+static SDL_Rect ppSrc;
+static postProcess_t pp;
+static SDL_Texture* ppTex;
 
 void prepareMiniMap(SDL_Texture** tex)
 {
@@ -39,37 +38,68 @@ void destroyTexture(SDL_Texture* texture)
 	SDL_DestroyTexture(texture);
 }
 
-void prepareScene()
-{
-	SDL_SetRenderTarget(app.renderer, buf);
-}
-
 void presentMiniMap(SDL_Texture* tex)
 {
 	SDL_RenderPresent(app.renderer);
 }
 
-void presentScene(postProcess_t pp, SDL_Rect ppSrc)
+void prepareScene(postProcess_t newPp, SDL_Rect newPpSrc)
 {
-	SDL_RenderPresent(app.renderer);
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
+	SDL_RenderClear(app.renderer);
 
-	SDL_Rect dest = { 30, 420, 300, 250 };
-	if (pp == FACE_CAM)
-		SDL_RenderCopy(app.renderer, buf, &ppSrc, &dest);
-
+	ppTex = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 300, 250);
+	SDL_SetTextureBlendMode(ppTex, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderTarget(app.renderer, ppTex);
+	SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_NONE);
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 0);
+	SDL_RenderFillRect(app.renderer, NULL);
 	SDL_SetRenderTarget(app.renderer, NULL);
-	SDL_RenderCopy(app.renderer, buf, NULL, NULL);
+
+	pp = newPp;
+	ppSrc = newPpSrc;
+	ppScale.x = (double)DEST.w / (double)ppSrc.w;
+	ppScale.y = (double)DEST.h / (double)ppSrc.h;
 }
 
-void renderCopy(SDL_Texture* tex, SDL_Rect rect)
+void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 {
-	SDL_RenderCopy(app.renderer, tex, NULL, &rect);
+	blit(ppTex, 30 + app.camera.x, 420 + app.camera.y, 0, 1, SDL_FLIP_NONE);
+	SDL_RenderPresent(app.renderer);
 }
 
 void drawLine(IntVector v1, IntVector v2)
 {
 	SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(app.renderer, v1.x - app.camera.x, v1.y - app.camera.y, v2.x - app.camera.x, v2.y - app.camera.y);
+
+	if (pp == FACE_CAM)
+	{
+		v1.x -= app.camera.x;
+		v1.y -= app.camera.y;
+		v2.x -= app.camera.x;
+		v2.y -= app.camera.y;
+		IntVector v1Mod = v1;
+		IntVector v2Mod = v2;
+		if (SDL_IntersectRectAndLine(&ppSrc, &v1Mod.x, &v1Mod.y, &v2Mod.x, &v2Mod.y))
+		{
+			v1.x -= ppSrc.x;
+			v1.y -= ppSrc.y;
+			v2.x -= ppSrc.x;
+			v2.y -= ppSrc.y;
+
+			SDL_SetRenderTarget(app.renderer, ppTex);
+
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x, v1.y * ppScale.y, v2.x * ppScale.x, v2.y * ppScale.y);
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x + 1, v1.y * ppScale.y + 1, v2.x * ppScale.x + 1, v2.y * ppScale.y + 1);
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x + 2, v1.y * ppScale.y + 2, v2.x * ppScale.x + 2, v2.y * ppScale.y + 2);
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x + 3, v1.y * ppScale.y + 3, v2.x * ppScale.x + 3, v2.y * ppScale.y + 3);
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x + 4, v1.y * ppScale.y + 4, v2.x * ppScale.x + 4, v2.y * ppScale.y + 4);
+			SDL_RenderDrawLine(app.renderer, v1.x * ppScale.x + 5, v1.y * ppScale.y + 5, v2.x * ppScale.x + 5, v2.y * ppScale.y + 5);
+
+			SDL_SetRenderTarget(app.renderer, NULL);
+		}
+	}
 }
 
 void drawLineColored(IntVector v1, IntVector v2, Uint8 r, Uint8 g, Uint8 b)
@@ -90,6 +120,23 @@ void blit(SDL_Texture* texture, int x, int y, double rotation, float scale, SDL_
 	SDL_Point p = { 267 * scale, 400 * scale};
 
 	SDL_RenderCopyEx(app.renderer, texture, NULL, &dest, rotation, rotation ? &p : NULL, flip);
+
+	if (pp == FACE_CAM)
+	{
+		SDL_SetRenderTarget(app.renderer, ppTex);
+
+		dest.x -= ppSrc.x;
+		dest.y -= ppSrc.y;
+		dest.x *= ppScale.x;
+		dest.y *= ppScale.y;
+		dest.w *= ppScale.x;
+		dest.h *= ppScale.y;
+		p.x *= ppScale.x;
+		p.y *= ppScale.y;
+		SDL_RenderCopyEx(app.renderer, texture, NULL, &dest, rotation, rotation ? &p : NULL, flip);
+
+		SDL_SetRenderTarget(app.renderer, NULL);
+	}
 }
 
 void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y)

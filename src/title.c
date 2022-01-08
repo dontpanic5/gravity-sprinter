@@ -1,7 +1,7 @@
 #include "title.h"
 
-static void logic(void);
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc);
+static void logic(postProcess_t* pp, SDL_Rect* ppSrc);
+static void draw();
 
 static SDL_Texture* batty;
 static SDL_Texture* bgTexture;
@@ -10,7 +10,7 @@ static SDL_Texture* logo;
 #define BATTY_SCALE .6
 #define EXAMPLE_SCALE .3
 
-static int startCounter = 0;
+static int startCounter;
 static int gChangeCounter = 15;
 
 #ifndef _WIN32
@@ -40,8 +40,10 @@ void initTitle()
 	startCounter = 1;
 }
 
-static void logic()
+static void logic(postProcess_t* pp, SDL_Rect* ppSrc)
 {
+	*pp = NONE;
+
 	doInput();
 
 	if (app.space && startCounter > 30)
@@ -63,13 +65,12 @@ static void logic()
 		gChangeCounter--;
 	}
 
-	startCounter++;
+	if (startCounter <= 30)
+		startCounter++;
 }
 
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
+static void draw()
 {
-	*pp = NONE;
-
 	drawBg(bgTexture, bg2Texture, NULL, 0);
 
 	blit(batty, -25, 25, 0, (float)BATTY_SCALE, SDL_FLIP_NONE);

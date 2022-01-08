@@ -86,6 +86,5 @@ extern void destroyTexture(SDL_Texture* texture);
 extern void prepareMiniMap(SDL_Texture** tex);
 extern void setRendToWin(void);
 extern void presentMiniMap(SDL_Texture* tex);
-extern void renderCopy(SDL_Texture* tex, SDL_Rect rect);
 
 #endif // !STAGE_H_INIT

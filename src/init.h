@@ -18,6 +18,5 @@ extern App app;
 extern const IntVector windowSz;
 extern void batLog(char* format, ...);
 extern void initSounds();
-extern void createRendTex();
 
 #endif

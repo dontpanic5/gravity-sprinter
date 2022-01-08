@@ -15,8 +15,8 @@ double magicDragNumber;
 const int TEXT_X = WIN_X / 2;
 const int TEXT_Y = WIN_Y / 2 - 200;
 
-static void logic(void);
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc);
+static void logic(postProcess_t* pp, SDL_Rect* ppSrc);
+static void draw(void);
 static void initPlayer();
 static void initLevel();
 static void battyLogic(int colliding);
@@ -480,8 +480,23 @@ static void updateCamera()
 	}
 }
 
-static void logic(void)
+static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 {
+	*pp = FACE_CAM;
+
+	ppSrc->x = player->pos.x - app.camera.x;
+	if (battyFlipped && !crashed)
+		ppSrc->x += battyWidth - BATTY_FACE_W * BAT_SCALE;
+	ppSrc->y = player->pos.y - app.camera.y + BATTY_FACE_Y * BAT_SCALE;
+	if (houseLandedOn)
+	{
+		ppSrc->y -= 40;
+		if (!battyFlipped)
+			ppSrc->x += 20;
+	}
+	ppSrc->w = BATTY_FACE_W * BAT_SCALE;
+	ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
+
 	if (launchingFromHouseCounter && launchingFromHouseCounter < LAUNCH_COUNTER)
 		launchingFromHouseCounter++;
 	else if (launchingFromHouseCounter >= LAUNCH_COUNTER)
@@ -705,6 +720,9 @@ static int houseCollisions()
 					slideDist = houses[i]->hitbox[3].x - (player->pos.x + w) - 50; // fudge it and subtract 100
 				else if (player->pos.x < houses[i]->hitbox[0].x)
 					slideDist = houses[i]->hitbox[0].x - player->pos.x;
+
+				player->velocity.x = 0;
+				player->velocity.y = 0;
 			}
 			return 1;
 		}
@@ -861,23 +879,8 @@ static void drawMiniMap()
 	}
 }
 
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
+static void draw()
 {
-	*pp = FACE_CAM;
-
-	ppSrc->x = player->pos.x - app.camera.x;
-	if (battyFlipped && !crashed)
-		ppSrc->x += battyWidth - BATTY_FACE_W * BAT_SCALE;
-	ppSrc->y = player->pos.y - app.camera.y + BATTY_FACE_Y * BAT_SCALE;
-	if (houseLandedOn)
-	{
-		ppSrc->y -= 40;
-		if (!battyFlipped)
-			ppSrc->x += 20;
-	}
-	ppSrc->w = BATTY_FACE_W * BAT_SCALE;
-	ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
-
 	drawBg(
 		bgTexture,
 		app.gravity == G_EARTH ? bg2Texture : NULL,

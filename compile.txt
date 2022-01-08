@@ -1,25 +1,3 @@
 emcc -o index.html src/battyMath.c src/draw.c src/init.c src/input.c src/logging.c src/main.c src/sound.c src/stage.c src/text.c src/title.c src/instructions.c -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_MIXER=2 --preload-file audio --preload-file gfx --use-preload-plugins -s INITIAL_MEMORY=77mb
 
 python -m http.server
-
-
-Interesting problem.
-
-You can
-
-1. Render the entire scene to a texture (TexA)
-2. Render TexA to the window
-3. Render only the section of TexA that surrounds the bat's face to the bottom left of the window.
-
-https://wiki.libsdl.org/SDL_CreateTexture
-
-You would create TexA with the SDL_TEXTUREACCESS_TARGET flag, then render to it with
-
-SDL_SetRenderTarget: https://wiki.libsdl.org/SDL_SetRenderTarget
-
-To go back to the window as the render target, you would just call SDL_SetRenderTarget(renderer, NULL)
-
-
-upgrade face
-
-trains

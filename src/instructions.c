@@ -1,7 +1,7 @@
 #include "instructions.h"
 
-static void logic(void);
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc);
+static void logic(postProcess_t* pp, SDL_Rect* ppSrc);
+static void draw();
 
 static SDL_Texture* battySmile;
 static SDL_Texture* battyScaredRot;
@@ -12,6 +12,8 @@ static SDL_Texture* bg2Texture;
 
 static double riseFall = 0;
 static int isRising = 0;
+
+static int startCounter;
 
 void initInstructions()
 {
@@ -30,13 +32,17 @@ void initInstructions()
 		bgTexture = loadTexture("gfx/night-town-background-sky.png");
 	if (bg2Texture == NULL)
 		bg2Texture = loadTexture("gfx/night-town-background-forest.png");
+
+	startCounter = 1;
 }
 
-static void logic()
+static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 {
+	*pp = NONE;
+
 	doInput();
 
-	if (app.t)
+	if (app.t && startCounter > 30)
 		initTitle();
 
 	riseFall = riseFall + (isRising ? -1.2 : 1.5);
@@ -45,12 +51,13 @@ static void logic()
 		isRising = 1;
 	else if (riseFall < 0)
 		isRising = 0;
+
+	if (startCounter <= 30)
+		startCounter++;
 }
 
-static void draw(postProcess_t* pp, SDL_Rect* ppSrc)
+static void draw()
 {
-	*pp = NONE;
-
 	drawBg(bgTexture, bg2Texture, NULL, 0);
 
 	drawText(50, 50, 255, 0, 0, TEXT_LEFT, "LAND GENTLY ON THE HOUSES TO SUCK BLOOD!");

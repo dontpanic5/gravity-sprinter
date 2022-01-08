@@ -25,16 +25,17 @@ EM_BOOL one_iter()
 void one_iter()
 #endif // __EMSCRIPTEN__
 {
-	prepareScene();
-
 	doInput();
-
-	app.delegate.logic();
 
 	postProcess_t pp = NONE;
 	SDL_Rect ppSrc;
 	memset(&ppSrc, 0, sizeof(SDL_Rect));
-	app.delegate.draw(&pp, &ppSrc);
+
+	app.delegate.logic(&pp, &ppSrc);
+
+	prepareScene(pp, ppSrc);
+
+	app.delegate.draw();
 
 	presentScene(pp, ppSrc);
 

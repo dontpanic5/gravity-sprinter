@@ -33,8 +33,8 @@ typedef enum GRAVITY Gravity;
 #define LAST_G 1
 
 typedef struct {
-	void (*logic) (void);
-	void (*draw) (postProcess_t* pp, SDL_Rect* ppSrc);
+	void (*logic) (postProcess_t* pp, SDL_Rect* ppSrc);
+	void (*draw) ();
 } Delegate;
 
 typedef struct {
