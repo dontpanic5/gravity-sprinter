@@ -487,7 +487,16 @@ static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 	ppSrc->x = player->pos.x - app.camera.x;
 	if (battyFlipped && !crashed)
 		ppSrc->x += battyWidth - BATTY_FACE_W * BAT_SCALE;
-	ppSrc->y = player->pos.y - app.camera.y + BATTY_FACE_Y * BAT_SCALE;
+	double rotationTrans = player->rotation / -2;
+	if (battyFlipped)
+		rotationTrans *= -1;
+	if (rotationTrans < 0)
+		rotationTrans /= 2;
+	ppSrc->y = 
+		player->pos.y -
+		app.camera.y +
+		BATTY_FACE_Y * BAT_SCALE +
+		rotationTrans;
 	if (houseLandedOn)
 	{
 		ppSrc->y -= 40;
@@ -961,15 +970,10 @@ static void draw()
 	IntVector p = getMiniMapPoint(player->pos.x, player->pos.y);
 	p.x += miniMapTrans.x;
 	p.y += miniMapTrans.y;
-	
-	drawLineColored(p, p, 255, 0, 0);
-	p.x++;
-	drawLineColored(p, p, 255, 0, 0);
-	p.y++;
-	p.x--;
-	drawLineColored(p, p, 255, 0, 0);
-	p.x++;
-	drawLineColored(p, p, 255, 0, 0);
+
+	SDL_Rect playerMini = { p.x - app.camera.x, p.y - app.camera.y, 3, 3 };
+	SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawRect(app.renderer, &playerMini);
 
 	if (houseLandedOn)
 	{
