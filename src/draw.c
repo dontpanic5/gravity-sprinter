@@ -65,6 +65,7 @@ void prepareScene(postProcess_t newPp, SDL_Rect newPpSrc)
 void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 {
 	blit(ppTex, 30 + app.camera.x, 420 + app.camera.y, 0, 1, SDL_FLIP_NONE);
+	destroyTexture(ppTex);
 	SDL_RenderPresent(app.renderer);
 }
 
