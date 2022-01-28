@@ -24,7 +24,7 @@
     <ProjectGuid>{be814463-571b-4392-a210-f86dfc0d68be}</ProjectGuid>
     <RootNamespace>BatLander</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Batty Vamps</ProjectName>
+    <ProjectName>Gravity Sprinter</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
