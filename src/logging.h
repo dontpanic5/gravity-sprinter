@@ -6,4 +6,6 @@
 #include "SDL.h"
 #endif
 
+void batLog(const char* format, ...);
+
 #endif // !LOGGING_H_INIT

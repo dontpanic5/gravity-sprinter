@@ -20,7 +20,7 @@ static void capFrameRate()
 }
 
 #ifdef __EMSCRIPTEN__
-EM_BOOL one_iter()
+EM_BOOL one_iter(double time, void* userData)
 #else
 void one_iter()
 #endif // __EMSCRIPTEN__
@@ -68,11 +68,10 @@ int main()
 
 	initSounds();
 
-	loadMusic("audio/spooky-times-9726.ogg");
+	// loadMusic() playerMusic() are called here
 
-	playMusic();
-
-	initTitle();
+	// initialize whatever you want to see
+	initStage();
 
 	then = SDL_GetTicks();
 	frRemainder = 0;

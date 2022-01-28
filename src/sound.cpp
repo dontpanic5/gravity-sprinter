@@ -54,7 +54,5 @@ void haltChannel(int chan)
 
 static void loadSounds()
 {
-	sounds[SND_PLAYER_CRASH] = Mix_LoadWAV("audio/frustrated.ogg");
-	sounds[SND_PLAYER_FLAP] = Mix_LoadWAV("audio/flap.ogg");
-	sounds[SND_PLAYER_LAUGH] = Mix_LoadWAV("audio/laugh.wav");
+	//sounds[SND_EXAMPLE] = Mix_LoadWAV("audio/example");
 }

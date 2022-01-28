@@ -7,20 +7,15 @@
 
 extern App app;
 
-extern void batLog(char* format, ...);
-
 enum
 {
 	CH_ANY = -1,
-	CH_PLAYER,
-	CH_WINGS
+	CH_PLAYER
 };
 
 enum
 {
-	SND_PLAYER_LAUGH,
-	SND_PLAYER_CRASH,
-	SND_PLAYER_FLAP,
+	SND_EXAMPLE,
 	SND_MAX
 };
 

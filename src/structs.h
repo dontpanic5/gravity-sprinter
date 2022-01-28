@@ -51,7 +51,7 @@ typedef struct {
 
 	int tickCount;
 
-	int lastHouse;
+	int checkpoint;
 
 	Gravity gravity;
 } App;

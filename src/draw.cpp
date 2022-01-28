@@ -22,7 +22,7 @@ void setRendToWin()
 	SDL_SetRenderTarget(app.renderer, NULL);
 }
 
-SDL_Texture* loadTexture(char* filename)
+SDL_Texture* loadTexture(const char* filename)
 {
 	SDL_Texture* texture;
 
@@ -117,8 +117,9 @@ void blit(SDL_Texture* texture, int x, int y, double rotation, float scale, SDL_
 	dest.w = (int) (dest.w * scale);
 	dest.h = (int) (dest.h * scale);
 
+	// TODO FIX
 	// this is incredibly hacky but the only thing that rotates is Batty so hardcode her center
-	SDL_Point p = { 267 * scale, 400 * scale};
+	SDL_Point p = { static_cast<int>(267 * scale), static_cast<int>(400 * scale) };
 
 	SDL_RenderCopyEx(app.renderer, texture, NULL, &dest, rotation, rotation ? &p : NULL, flip);
 

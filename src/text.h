@@ -2,6 +2,9 @@
 #define TEXT_H_INIT
 
 #include <stdio.h>
+#include <cstring>
+
+#include "draw.h"
 
 #ifdef SDL_DIR
 #include "SDL2/SDL.h"
@@ -22,6 +25,5 @@ enum
 };
 
 extern void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y);
-extern SDL_Texture* loadTexture(char* filename);
 
 #endif

@@ -158,17 +158,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\draw.c" />
-    <ClCompile Include="src\init.c" />
-    <ClCompile Include="src\input.c" />
-    <ClCompile Include="src\instructions.c" />
-    <ClCompile Include="src\logging.c" />
-    <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\battyMath.c" />
-    <ClCompile Include="src\sound.c" />
-    <ClCompile Include="src\stage.c" />
-    <ClCompile Include="src\text.c" />
-    <ClCompile Include="src\title.c" />
+    <ClCompile Include="src\draw.cpp" />
+    <ClCompile Include="src\init.cpp" />
+    <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\instructions.cpp" />
+    <ClCompile Include="src\logging.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\battyMath.cpp" />
+    <ClCompile Include="src\sound.cpp" />
+    <ClCompile Include="src\stage.cpp" />
+    <ClCompile Include="src\text.cpp" />
+    <ClCompile Include="src\title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\draw.h" />

@@ -66,8 +66,8 @@ double degToRad(double deg)
 IntVector rotatePoint(IntVector p, IntVector center, double deg)
 {
 	IntVector rotatedPoint = {
-		center.x + (p.x - center.x) * cos(degToRad(deg)) - (p.y - center.y) * sin(degToRad(deg)),
-		center.y + (p.x - center.x) * sin(degToRad(deg)) + (p.y - center.y) * cos(degToRad(deg))
+		static_cast<int>(center.x + (p.x - center.x) * cos(degToRad(deg)) - (p.y - center.y) * sin(degToRad(deg))),
+		static_cast<int>(center.y + (p.x - center.x) * sin(degToRad(deg)) + (p.y - center.y) * cos(degToRad(deg)))
 	};
 	return rotatedPoint;
 }
