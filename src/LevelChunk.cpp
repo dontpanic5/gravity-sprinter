@@ -24,7 +24,7 @@ void LevelChunk::addPointAtOffset(IntVector offset, int lineIdx)
 	m_lines[lineIdx].push_back({ prevPoint.x + offset.x, prevPoint.y + offset.y });
 }
 
-int LevelChunk::getChunkLength()
+int LevelChunk::getChunkLength() const
 {
 	int furthestPoint = -1;
 	for (std::vector<IntVector> line : m_lines)
@@ -35,7 +35,17 @@ int LevelChunk::getChunkLength()
 	return furthestPoint;
 }
 
-int LevelChunk::getNumLines()
+int LevelChunk::getNumLines() const
 {
 	return m_lines.size();
+}
+
+int LevelChunk::getLineLength(int lineIdx) const
+{
+	return m_lines[lineIdx].size();
+}
+
+IntVector LevelChunk::getPoint(int lineIdx, int pointIdx) const
+{
+	return m_lines[lineIdx][pointIdx];
 }

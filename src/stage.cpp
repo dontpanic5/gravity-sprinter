@@ -1,4 +1,5 @@
 #include "stage.h"
+#include "StageDraw.h"
 
 #define P1(x1, y1) { ++i; gp[i].x = gp[i - 1].x + x1; gp[i].y = gp[i - 1].y + y1; }
 #define P2(x2, y2) { ++i2; gp2[i2].x = gp[i2].x + x2; gp2[i2].y = gp[i2].y + y2; }
@@ -32,7 +33,7 @@ static void resetStage(void);
 static void stopFlapping();
 static void resetState();
 static void resetPlayer(int energy);
-static void drawMiniMap(void);
+//static void drawMiniMap(void);
 
 static Entity* player;
 
@@ -416,74 +417,9 @@ static void draw()
 		WIN_Y + SCREEN_BUFFER * 2
 	};
 
-
-
-	/*IntVector* curChunk[];
-	= allChunks[currentChunkIdx];
-	for (int i = 0; i < linesInChunks[currentChunkIdx]; i++)
-	{
-		for (int j = 0; j < sizeof(allChunks[currentChunkIdx][i]) / sizeof(IntVector); j++)
-		{
-		}
-	}*/
-
-
-	for (int i = 0; i < allChunks[currentChunkIdx].getNumLines(); i++)
-	{
-		for 
-	}
-
-
-
-	/*for (int j = 0; j < TOT_NUM_LINES; j++)
-	{
-		for (int i = 0; i < gpLengths[j] - 1; i++)
-		{
-			int x1 = allGp[j][i].x;
-			int y1 = allGp[j][i].y;
-			int x2 = allGp[j][i + 1].x;
-			int y2 = allGp[j][i + 1].y;
-			SDL_bool onScreen = SDL_IntersectRectAndLine(
-				&screen,
-				&x1,
-				&y1,
-				&x2,
-				&y2
-			);
-			if (!onScreen)
-				continue;
-
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].y++;
-			allGp[j][i + 1].y++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].x++;
-			allGp[j][i + 1].x++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].y++;
-			allGp[j][i + 1].y++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].x++;
-			allGp[j][i + 1].x++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].y++;
-			allGp[j][i + 1].y++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].x++;
-			allGp[j][i + 1].x++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].y++;
-			allGp[j][i + 1].y++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].x++;
-			allGp[j][i + 1].x++;
-			drawLine(allGp[j][i], allGp[j][i + 1]);
-			allGp[j][i].y -= 4;
-			allGp[j][i + 1].y -= 4;
-			allGp[j][i].x -= 4;
-			allGp[j][i + 1].x -= 4;
-		}
-	}*/
+	LevelChunk &chunk = allChunks[currentChunkIdx];
+	drawChunk(allChunks[currentChunkIdx], currentChunkStart);
+	drawChunk(allChunks[nextChunkIdx], nextChunkStart);
 
 	drawPlayer();
 

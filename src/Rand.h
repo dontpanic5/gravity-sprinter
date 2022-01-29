@@ -1,4 +1,4 @@
-#if !defined(RAND_H_INCLUDED)
+#ifndef RAND_H_INCLUDED
 #define RAND_H_INCLUDED
 
 #include <random>

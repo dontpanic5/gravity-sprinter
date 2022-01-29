@@ -168,6 +168,7 @@
     <ClCompile Include="src\battyMath.cpp" />
     <ClCompile Include="src\sound.cpp" />
     <ClCompile Include="src\stage.cpp" />
+    <ClCompile Include="src\StageDraw.cpp" />
     <ClCompile Include="src\text.cpp" />
     <ClCompile Include="src\title.cpp" />
   </ItemGroup>
@@ -183,6 +184,7 @@
     <ClInclude Include="src\Rand.h" />
     <ClInclude Include="src\sound.h" />
     <ClInclude Include="src\stage.h" />
+    <ClInclude Include="src\StageDraw.h" />
     <ClInclude Include="src\structs.h" />
     <ClInclude Include="src\text.h" />
     <ClInclude Include="src\title.h" />
