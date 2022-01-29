@@ -48,7 +48,7 @@
     <ClCompile Include="src\instructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\chunkUtils.cpp">
+    <ClCompile Include="src\LevelChunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClInclude Include="src\Rand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\chunkUtils.h">
+    <ClInclude Include="src\LevelChunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

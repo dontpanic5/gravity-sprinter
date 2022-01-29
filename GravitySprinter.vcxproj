@@ -158,11 +158,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\chunkUtils.cpp" />
     <ClCompile Include="src\draw.cpp" />
     <ClCompile Include="src\init.cpp" />
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\instructions.cpp" />
+    <ClCompile Include="src\LevelChunk.cpp" />
     <ClCompile Include="src\logging.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\battyMath.cpp" />
@@ -172,11 +172,11 @@
     <ClCompile Include="src\title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\chunkUtils.h" />
     <ClInclude Include="src\draw.h" />
     <ClInclude Include="src\init.h" />
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\instructions.h" />
+    <ClInclude Include="src\LevelChunk.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\battyMath.h" />

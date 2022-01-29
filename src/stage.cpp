@@ -36,7 +36,7 @@ static void drawMiniMap(void);
 
 static Entity* player;
 
-static IntVector** allChunks[NUMBER_OF_CHUNKS];
+static LevelChunk allChunks[NUMBER_OF_CHUNKS];
 
 static int currentChunkIdx = -1;
 static int currentChunkStart = -1;
@@ -64,7 +64,7 @@ static void setChunks()
 	currentChunkIdx = getRandomChunkIdx();
 	currentChunkStart = 0;
 	nextChunkIdx = getRandomChunkIdx();
-	nextChunkStart = getChunkLength(allChunks[currentChunkIdx], NUMBER_OF_CHUNKS);
+	nextChunkStart = allChunks[currentChunkIdx].getChunkLength();
 }
 
 void initStage(void)
@@ -187,7 +187,6 @@ static void initLevel()
 	int i4 = 0;
 
 	IntVector gp[2];
-	IntVector* chunk1[1] = { gp };
 
 	// set ground points
 
@@ -197,7 +196,9 @@ static void initLevel()
 	gp[i].x = WIN_X * 2;
 	gp[i].y = WIN_Y;
 
-	allChunks[0] = chunk1;
+
+	allChunks[0].addLine({ 0, WIN_Y });
+	allChunks[0].addPointAtOffset({ WIN_X * 2, 0 }, 0);
 
 
 	//++i; // 2
@@ -398,23 +399,6 @@ static void drawPlayer()
 
 }
 
-IntVector getMiniMapPoint(int x, int y)
-{
-	IntVector p = { static_cast<int>(((double)x) / RIGHTMOST_ALLOWABLE * 290), static_cast<int>(((double)y) / RIGHTMOST_ALLOWABLE * 290) };
-	return p;
-}
-
-static void drawMiniMap()
-{
-	for (int j = 0; j < TOT_NUM_LINES; j++)
-		for (int i = 0; i < gpLengths[j] - 1; i++)
-		{
-			IntVector mini1 = getMiniMapPoint(allGp[j][i].x, allGp[j][i].y);
-			IntVector mini2 = getMiniMapPoint(allGp[j][i + 1].x, allGp[j][i + 1].y);
-			drawLine(mini1, mini2);
-		}
-}
-
 static void draw()
 {
 	/*drawBg(
@@ -434,9 +418,20 @@ static void draw()
 
 
 
-	allChunks[currentChunkIdx];
+	/*IntVector* curChunk[];
+	= allChunks[currentChunkIdx];
+	for (int i = 0; i < linesInChunks[currentChunkIdx]; i++)
+	{
+		for (int j = 0; j < sizeof(allChunks[currentChunkIdx][i]) / sizeof(IntVector); j++)
+		{
+		}
+	}*/
 
 
+	for (int i = 0; i < allChunks[currentChunkIdx].getNumLines(); i++)
+	{
+		for 
+	}
 
 
 

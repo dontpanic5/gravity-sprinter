@@ -7,7 +7,7 @@
 #include "sound.h"
 #include "battyMath.h"
 #include "Rand.h"
-#include "chunkUtils.h"
+#include "LevelChunk.h"
 #include <math.h>
 
 // how many pixels are a meter
