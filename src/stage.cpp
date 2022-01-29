@@ -27,8 +27,8 @@ static void logic(postProcess_t* pp, SDL_Rect* ppSrc);
 static void draw(void);
 static void initPlayer();
 static void initLevel();
-static void playerLogic(int colliding);
-static int checkCollisions();
+static void playerLogic();
+static void checkCollisions(double* veloDelta, double* posDelta, bool* died);
 static void resetStage(void);
 static void stopFlapping();
 static void resetState();
@@ -57,7 +57,7 @@ static SDL_Texture* playerTexture;
 
 static int getRandomChunkIdx()
 {
-	return Rand<int>(0, NUMBER_OF_CHUNKS)();
+	return Rand<int>(NUMBER_OF_CHUNKS - 1, 0)();
 }
 
 static void setChunks()
@@ -124,16 +124,16 @@ static void resetStage()
 
 static void setPlayerHitBox()
 {
-	player->hitbox[0].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
-	player->hitbox[0].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
-	player->hitbox[1].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_RIGHT_X * BAT_SCALE);
-	player->hitbox[1].y = player->pos.y + BATTY_HITBOX_TOP_Y * BAT_SCALE;
-	player->hitbox[2].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_RIGHT_X * BAT_SCALE : BATTY_HITBOX_RIGHT_X * BAT_SCALE);
-	player->hitbox[2].y = player->pos.y + battyHeight;
-	player->hitbox[3].x = player->pos.x + (battyFlipped ? battyWidth - BATTY_HITBOX_LEFT_X * BAT_SCALE : BATTY_HITBOX_LEFT_X * BAT_SCALE);
-	player->hitbox[3].y = player->pos.y + battyHeight;
+	player->hitbox[0].x = player->pos.x;
+	player->hitbox[0].y = player->pos.y;
+	player->hitbox[1].x = player->pos.x + PLAYER_WIDTH;
+	player->hitbox[1].y = player->pos.y;
+	player->hitbox[2].x = player->pos.x + PLAYER_WIDTH;
+	player->hitbox[2].y = player->pos.y + PLAYER_HEIGHT;
+	player->hitbox[3].x = player->pos.x;
+	player->hitbox[3].y = player->pos.y + PLAYER_HEIGHT;
 
-	IntVector center = {
+	/*IntVector center = {
 		static_cast<int>(player->pos.x + 267 * BAT_SCALE),
 		static_cast<int>(player->pos.y + 400 * BAT_SCALE)
 	};
@@ -141,7 +141,7 @@ static void setPlayerHitBox()
 	player->hitbox[0] = rotatePoint(player->hitbox[0], center, player->rotation);
 	player->hitbox[1] = rotatePoint(player->hitbox[1], center, player->rotation);
 	player->hitbox[2] = rotatePoint(player->hitbox[2], center, player->rotation);
-	player->hitbox[3] = rotatePoint(player->hitbox[3], center, player->rotation);
+	player->hitbox[3] = rotatePoint(player->hitbox[3], center, player->rotation);*/
 
 }
 
@@ -251,12 +251,6 @@ static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 	//ppSrc->w = BATTY_FACE_W * BAT_SCALE;
 	//ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
 
-	// time to switch
-	/*if (app.camera.x > nextChunkStart)
-	{
-		currentChunkIdx = 
-	}*/
-
 	if (crashed)
 	{
 		if (app.t)
@@ -271,11 +265,18 @@ static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 		return;
 	}
 
-	int c = checkCollisions();
-
-	playerLogic(c);
+	playerLogic();
 
 	updateCamera();
+
+	if (nextChunkStart < app.camera.x)
+	{
+		currentChunkStart = nextChunkStart;
+		currentChunkIdx = nextChunkIdx;
+
+		nextChunkIdx = getRandomChunkIdx();
+		nextChunkStart = currentChunkStart + allChunks[currentChunkIdx].getChunkLength();
+	}
 }
 
 // movement sound
@@ -289,7 +290,7 @@ void stopFlapping()
 	haltChannel(CH_PLAYER);
 }
 
-static void playerLogic(int colliding)
+static void playerLogic()
 {
 	// track player's acceleration this frame. Always start with gravity
 	DoubleVector playerAcceleration = { 0, gravity };
@@ -316,10 +317,22 @@ static void playerLogic(int colliding)
 		player->energy--;
 	}
 
-	double yAccel = playerAcceleration.y * GAME_LOOP_FRACTION;
+	/*double yAccel = playerAcceleration.y * GAME_LOOP_FRACTION;
+	player->velocity.y += yAccel;
+	double yVelo = (int)round(player->velocity.y * GAME_LOOP_FRACTION);*/
+
+	double veloDelta = playerAcceleration.y * GAME_LOOP_FRACTION;
+	double posDelta = (int)round((player->velocity.y + veloDelta) * GAME_LOOP_FRACTION);
 
 	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velocity x: %f y: %f", player->velocity.x, player->velocity.y);
 
+	bool died;
+
+	checkCollisions(&veloDelta, &posDelta, &died);
+
+	player->velocity.y += veloDelta;
+
+	player->pos.y += posDelta;
 	player->pos.x += SCROLL;
 
 	// flipping logic
@@ -331,37 +344,43 @@ static void playerLogic(int colliding)
 	setPlayerHitBox();
 }
 
-static int groundCollisions()
+static void groundCollisions(double* veloDelta, double* posDelta, bool* died)
 {
-	// add the collision code TODO
-	/*for (int j = 0; j < TOT_NUM_LINES; j++)
+	for (int i = 0; i < allChunks[currentChunkIdx].getNumLines(); i++)
 	{
-		for (int i = 0; i < gpLengths[j] - 1; i++)
+		for (int j = 0; j < allChunks[currentChunkIdx].getLineLength(i) - 1; j++)
 		{
-			for (int b = 0; b < BATTY_POINTS - 1; b++)
+			for (int p = 0; p < 3; p++)
 			{
-				if (areIntersecting(player->hitbox[b], player->hitbox[b + 1], allGp[j][i], allGp[j][i + 1]))
+				IntVector h1 = player->hitbox[p];
+				IntVector h2 = player->hitbox[p + 1];
+				h1.y += static_cast<int>(*posDelta);
+				h2.y += static_cast<int>(*posDelta);
+				IntVector p1 = allChunks[currentChunkIdx].getPoint(i, j);
+				IntVector p2 = allChunks[currentChunkIdx].getPoint(i, j + 1);
+				p1.x += currentChunkStart;
+				p2.x += currentChunkStart;
+				if (areIntersecting(player->hitbox[p], player->hitbox[p + 1], p1, p2))
 				{
-					crashed = 1;
-					playSound(SND_EXAMPLE, CH_PLAYER, 0);
-
-					if (player->energy >= 100)
-						player->energy -= 100;
+					if (p1.x == p2.x)
+					{
+						*died = true;
+						*veloDelta = 0;
+						*posDelta = 0;
+					}
 					else
-						player->energy = 0;
-					return 1;
+					{
+						
+					}
 				}
 			}
 		}
-	}*/
-	return 0;
+	}
 }
 
-static int checkCollisions()
+static void checkCollisions(double* veloDelta, double* posDelta, bool* died)
 {
-	// can add additional collision checks here
-
-	return groundCollisions();
+	groundCollisions(veloDelta, posDelta, died);
 }
 
 static void drawPlayer()
