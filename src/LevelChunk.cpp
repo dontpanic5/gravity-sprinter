@@ -12,9 +12,9 @@ LevelChunk::LevelChunk(IntVector init[])
 	}
 }
 
-void LevelChunk::addLine(IntVector startingPoint)
+void LevelChunk::addLine(IntVector startingPoint, Bound bound)
 {
-	std::vector<IntVector> newLine = { startingPoint };
+	ChunkLine newLine(startingPoint, bound);
 	m_lines.push_back(newLine);
 }
 
@@ -48,4 +48,13 @@ int LevelChunk::getLineLength(int lineIdx) const
 IntVector LevelChunk::getPoint(int lineIdx, int pointIdx) const
 {
 	return m_lines[lineIdx][pointIdx];
+}
+
+ChunkLine::ChunkLine(Bound bound) : m_bound(bound)
+{
+}
+
+IntVector& ChunkLine::operator[](int i)
+{
+	return m_line[i];
 }
