@@ -6,6 +6,8 @@
 #include "text.h"
 #include "sound.h"
 #include "battyMath.h"
+#include "Rand.h"
+#include "chunkUtils.h"
 #include <math.h>
 
 // how many pixels are a meter
@@ -18,6 +20,8 @@
 // tweak this to get a good terminal velocity.
 #define DESIRED_TERMINAL_VELOCITY_METERS -5
 #define DESIRED_TERMINAL_VELOCITY_METERS_MOON -10
+
+#define SCROLL 10
 
 // how many degrees of rotation are possible in a second
 #define ROTATION_SPEED 90
@@ -45,12 +49,6 @@
 //#define HOUSE_HITBOX_P0 73
 //#define HOUSE_HITBOX_P1 59
 //#define HOUSE_HITBOX_P2 325
-
-#define NUM_OF_GROUND_POINTS 33
-#define NUM_OF_GROUND_POINTS2 5
-#define NUM_OF_GROUND_POINTS3 8
-#define NUM_OF_GROUND_POINTS4 10
-#define TOT_NUM_LINES 4
 
 #define BAT_SCALE .20
 

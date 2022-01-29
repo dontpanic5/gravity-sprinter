@@ -12,4 +12,6 @@ extern App app;
 
 SDL_Texture* loadTexture(const char* filename);
 
+void drawRect(SDL_Rect r);
+
 #endif

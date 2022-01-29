@@ -45,7 +45,7 @@ void presentMiniMap(SDL_Texture* tex)
 
 void prepareScene(postProcess_t newPp, SDL_Rect newPpSrc)
 {
-	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, 255);
 	SDL_RenderClear(app.renderer);
 
 	ppTex = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 300, 250);
@@ -71,7 +71,7 @@ void presentScene(postProcess_t pp, SDL_Rect ppSrc)
 
 void drawLine(IntVector v1, IntVector v2)
 {
-	SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(app.renderer, v1.x - app.camera.x, v1.y - app.camera.y, v2.x - app.camera.x, v2.y - app.camera.y);
 
 	if (pp == FACE_CAM)
@@ -146,6 +146,14 @@ void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y)
 	SDL_Rect dest = { x, y, src->w, src->h };
 
 	SDL_RenderCopy(app.renderer, texture, src, &dest);
+}
+
+void drawRect(SDL_Rect r)
+{
+	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	r.x -= app.camera.x;
+	r.y -= app.camera.y;
+	SDL_RenderFillRect(app.renderer, &r);
 }
 
 void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)

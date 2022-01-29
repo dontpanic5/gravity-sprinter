@@ -5,6 +5,11 @@
 #define P3(x3, y3) { ++i3; gp3[i3].x = gp[i3].x + x3; gp3[i3].y = gp[i3].y + y3; }
 #define P4(x4, y4) { ++i4; gp4[i4].x = gp[i].x + x4; gp4[i4].y = gp[i].y + y4; }
 
+constexpr int PLAYER_HEIGHT = 40;
+constexpr int PLAYER_WIDTH = 20;
+
+constexpr int NUMBER_OF_CHUNKS = 1;
+
 const double ROTATION_TICK = ROTATION_SPEED * GAME_LOOP_FRACTION;
 
 double gravity;
@@ -31,15 +36,12 @@ static void drawMiniMap(void);
 
 static Entity* player;
 
-// groundPoints (made it two letters because I have to type it so much
+static IntVector** allChunks[NUMBER_OF_CHUNKS];
 
-static IntVector gp[NUM_OF_GROUND_POINTS];
-static IntVector gp2[NUM_OF_GROUND_POINTS2];
-static IntVector gp3[NUM_OF_GROUND_POINTS3];
-static IntVector gp4[NUM_OF_GROUND_POINTS4];
-
-static IntVector* allGp[TOT_NUM_LINES];
-static int gpLengths[TOT_NUM_LINES];
+static int currentChunkIdx = -1;
+static int currentChunkStart = -1;
+static int nextChunkIdx = -1;
+static int nextChunkStart = -1;
 
 static int crashed;
 
@@ -51,10 +53,19 @@ static int battyFlipped = 0;
 // set textures
 
 static SDL_Texture* playerTexture;
-static SDL_Texture* bgTexture;
-static SDL_Texture* bg2Texture;
-static SDL_Texture* bg3Texture;
-static SDL_Texture* miniMapTexture;
+
+static int getRandomChunkIdx()
+{
+	return Rand<int>(0, NUMBER_OF_CHUNKS)();
+}
+
+static void setChunks()
+{
+	currentChunkIdx = getRandomChunkIdx();
+	currentChunkStart = 0;
+	nextChunkIdx = getRandomChunkIdx();
+	nextChunkStart = getChunkLength(allChunks[currentChunkIdx], NUMBER_OF_CHUNKS);
+}
 
 void initStage(void)
 {
@@ -75,28 +86,13 @@ void initStage(void)
 		magicDragNumber = GRAVITY_METERS / DESIRED_TERMINAL_VELOCITY_METERS;
 	}
 
-	if (playerTexture == NULL)
-		playerTexture = loadTexture("gfx/bat_smile.png");
-	if (bgTexture == NULL)
-		bgTexture = loadTexture("gfx/night-town-background-sky.png");
-	if (bg2Texture == NULL)
-		bg2Texture = loadTexture("gfx/night-town-background-forest.png");
-	if (bg3Texture == NULL)
-		bg3Texture = loadTexture("gfx/night-town-background-clouds.png");
-
-	allGp[0] = gp;
-	allGp[1] = gp2;
-	allGp[2] = gp3;
-	allGp[3] = gp4;
-
-	gpLengths[0] = NUM_OF_GROUND_POINTS;
-	gpLengths[1] = NUM_OF_GROUND_POINTS2;
-	gpLengths[2] = NUM_OF_GROUND_POINTS3;
-	gpLengths[3] = NUM_OF_GROUND_POINTS4;
+	/*if (playerTexture == NULL)
+		playerTexture = loadTexture("gfx/bat_smile.png");*/
 
 	resetStage();
 
 	initLevel();
+	setChunks();
 
 	/*prepareMiniMap(&miniMapTexture);
 	drawMiniMap();
@@ -153,7 +149,7 @@ static void resetPlayer(int energy)
 	memset(&player->velocity, 0, sizeof(DoubleVector));
 	player->rotation = 0;
 
-	player->texture = playerTexture;
+	player->texture = nullptr;
 
 	// checkpoints
 	if (app.checkpoint)
@@ -165,11 +161,13 @@ static void resetPlayer(int energy)
 	}
 	else
 	{
-		player->pos.x = WIN_X / 2;
-		player->pos.y = WIN_Y / 2;
+		player->pos.x = 150;
+		player->pos.y = WIN_Y - PLAYER_HEIGHT;
 		app.camera.x = 0;
 		app.camera.y = 90;
 	}
+
+	player->velocity.x = SCROLL;
 
 	setPlayerHitBox();
 }
@@ -184,77 +182,51 @@ static void initPlayer()
 static void initLevel()
 {
 	int i = 0;
-	int h = 0;
 	int i2 = 0;
 	int i3 = 0;
 	int i4 = 0;
 
+	IntVector gp[2];
+	IntVector* chunk1[1] = { gp };
+
 	// set ground points
 
 	gp[i].x = 0;
-	gp[i].y = -700;
+	gp[i].y = WIN_Y;
 	++i; // 1
-	gp[i].x = 0;
+	gp[i].x = WIN_X * 2;
 	gp[i].y = WIN_Y;
-	++i; // 2
-	gp[i].x = 500;
-	gp[i].y = WIN_Y;
-	++i; // 3
-	gp[i].x = 800;
-	gp[i].y = gp[i - 1].y;
-	++i; // 4
-	gp[i].x = 1500;
-	gp[i].y = gp[i - 1].y;
-	++i; // 5
+
+	allChunks[0] = chunk1;
+
+
+	//++i; // 2
+	//gp[i].x = 500;
+	//gp[i].y = WIN_Y;
+	//++i; // 3
+	//gp[i].x = 800;
+	//gp[i].y = gp[i - 1].y;
+	//++i; // 4
+	//gp[i].x = 1500;
+	//gp[i].y = gp[i - 1].y;
+	//++i; // 5
 	
 	// any other lines
 
-	gp2[i2].x = gp[19].x + 800;
-	gp2[i2].y = gp[19].y - 300;
+	//gp2[i2].x = gp[19].x + 800;
+	//gp2[i2].y = gp[19].y - 300;
 	++i2; // 1
 
-	P1(0, 2000); // 27
+	//P1(0, 2000); // 27
 
-	gp4[i4].x = gp[i].x + 200;
-	gp4[i4].y = gp[i].y - 3000;
-	P4(200, -200); // 1
+	//gp4[i4].x = gp[i].x + 200;
+	//gp4[i4].y = gp[i].y - 3000;
+	//P4(200, -200); // 1
 }
 
 static void updateCamera()
 {
-	// calc overlaps by taking player pos and subtracting the location of the areas where we move the camera
-
-	int rightOverlap = player->pos.x - (app.camera.x + WIN_X - CAM_BUF_HORZ);
-	if (rightOverlap > 0)
-	{
-		//batLog("Moving camera to the right by %d", rightOverlap);
-		app.camera.x += rightOverlap;
-	}
-	else
-	{
-		int leftOverlap = (app.camera.x + CAM_BUF_HORZ) - player->pos.x;
-		if (leftOverlap > 0)
-		{
-			//batLog("Moving camera to the left by %d", leftOverlap);
-			app.camera.x -= leftOverlap;
-		}
-	}
-
-	int bottomOverlap = player->pos.y - (app.camera.y + WIN_Y - CAM_BUF_BOTTOM);
-	if (bottomOverlap > 0)
-	{
-		//batLog("Moving camera down by %d", bottomOverlap);
-		app.camera.y += bottomOverlap;
-	}
-	else
-	{
-		int topOverlap = (app.camera.y + CAM_BUF_TOP) - player->pos.y;
-		if (topOverlap > 0)
-		{
-			//batLog("Moving camera up by %d", topOverlap);
-			app.camera.y -= topOverlap;
-		}
-	}
+	app.camera.x += SCROLL;
 }
 
 static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
@@ -276,6 +248,12 @@ static void logic(postProcess_t *pp, SDL_Rect *ppSrc)
 	// set some width and height for the post processing
 	//ppSrc->w = BATTY_FACE_W * BAT_SCALE;
 	//ppSrc->h = battyHeight - BATTY_FACE_Y * BAT_SCALE;
+
+	// time to switch
+	/*if (app.camera.x > nextChunkStart)
+	{
+		currentChunkIdx = 
+	}*/
 
 	if (crashed)
 	{
@@ -336,13 +314,11 @@ static void playerLogic(int colliding)
 		player->energy--;
 	}
 
-	player->velocity.x += playerAcceleration.x * GAME_LOOP_FRACTION;
-
 	double yAccel = playerAcceleration.y * GAME_LOOP_FRACTION;
 
 	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velocity x: %f y: %f", player->velocity.x, player->velocity.y);
 
-	player->pos.x += (int)round(player->velocity.x * GAME_LOOP_FRACTION);
+	player->pos.x += SCROLL;
 
 	// flipping logic
 	/*if (player->velocity.x > SAFE_VELOCITY)
@@ -355,7 +331,8 @@ static void playerLogic(int colliding)
 
 static int groundCollisions()
 {
-	for (int j = 0; j < TOT_NUM_LINES; j++)
+	// add the collision code TODO
+	/*for (int j = 0; j < TOT_NUM_LINES; j++)
 	{
 		for (int i = 0; i < gpLengths[j] - 1; i++)
 		{
@@ -374,7 +351,7 @@ static int groundCollisions()
 				}
 			}
 		}
-	}
+	}*/
 	return 0;
 }
 
@@ -400,15 +377,17 @@ static void drawPlayer()
 	else
 	{
 		// if animation condition
-		if (/*playingFlapSound &&*/ app.tickCount % 8 < 4)
-		{
-			// choose animation sprite
-		}
-		else
-		{
-			// choose animation sprite
-		}
+		//if (/*playingFlapSound &&*/ app.tickCount % 8 < 4)
+		//{
+		//	// choose animation sprite
+		//}
+		//else
+		//{
+		//	// choose animation sprite
+		//}
 		// draw animation sprite
+
+		drawRect({ player->pos.x, player->pos.y, PLAYER_WIDTH, PLAYER_HEIGHT });
 	}
 #ifdef DRAW_HB
 	drawLine(player->hitbox[0], player->hitbox[1]);
@@ -438,12 +417,12 @@ static void drawMiniMap()
 
 static void draw()
 {
-	drawBg(
+	/*drawBg(
 		bgTexture,
 		app.gravity == G_EARTH ? bg2Texture : NULL,
 		app.gravity == G_EARTH ? bg3Texture : NULL,
 		player->pos.x
-	);
+	);*/
 
 
 	SDL_Rect screen = {
@@ -453,7 +432,15 @@ static void draw()
 		WIN_Y + SCREEN_BUFFER * 2
 	};
 
-	for (int j = 0; j < TOT_NUM_LINES; j++)
+
+
+	allChunks[currentChunkIdx];
+
+
+
+
+
+	/*for (int j = 0; j < TOT_NUM_LINES; j++)
 	{
 		for (int i = 0; i < gpLengths[j] - 1; i++)
 		{
@@ -501,7 +488,7 @@ static void draw()
 			allGp[j][i].x -= 4;
 			allGp[j][i + 1].x -= 4;
 		}
-	}
+	}*/
 
 	drawPlayer();
 
