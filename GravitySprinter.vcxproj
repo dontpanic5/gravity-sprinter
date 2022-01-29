@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{be814463-571b-4392-a210-f86dfc0d68be}</ProjectGuid>
+    <ProjectGuid>{ACCD3CE9-D46C-4654-99A1-9AF8482B49C2}</ProjectGuid>
     <RootNamespace>BatLander</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Gravity Sprinter</ProjectName>
