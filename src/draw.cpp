@@ -148,12 +148,12 @@ void blitRect(SDL_Texture* texture, SDL_Rect* src, int x, int y)
 	SDL_RenderCopy(app.renderer, texture, src, &dest);
 }
 
-void drawRect(SDL_Rect r)
+void drawRect(SDL_Rect rect, int r, int g, int b)
 {
-	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	r.x -= app.camera.x;
-	r.y -= app.camera.y;
-	SDL_RenderFillRect(app.renderer, &r);
+	SDL_SetRenderDrawColor(app.renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	rect.x -= app.camera.x;
+	rect.y -= app.camera.y;
+	SDL_RenderFillRect(app.renderer, &rect);
 }
 
 void drawBg(SDL_Texture* bg, SDL_Texture* bg2, SDL_Texture* bg3, int pos)

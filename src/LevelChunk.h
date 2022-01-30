@@ -10,15 +10,18 @@ class LevelChunk
 {
 public:
 	LevelChunk();
-	LevelChunk(IntVector init[]);
+	LevelChunk(IntVector init[], bool antiGrav = false);
 	void addLine(IntVector startingPoint);
 	void addPointAtOffset(IntVector offset, int lineIdx);
+	void setAntiGrav(bool antigrav);
 	int getChunkLength() const;
 	int getNumLines() const;
 	int getLineLength(int lineIdx) const;
 	IntVector getPoint(int lineIdx, int pointIdx) const;
+	bool isAntiGrav() const;
 protected:
 	std::vector<std::vector<IntVector>> m_lines;
+	bool m_bAntiGrav = false;
 };
 
 #endif

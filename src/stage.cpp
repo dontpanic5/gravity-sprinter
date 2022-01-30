@@ -1,5 +1,7 @@
 #include "stage.h"
 #include "StageDraw.h"
+#include "battyMath.h"
+#include <cmath>
 
 #define P1(x1, y1) { ++i; gp[i].x = gp[i - 1].x + x1; gp[i].y = gp[i - 1].y + y1; }
 #define P2(x2, y2) { ++i2; gp2[i2].x = gp[i2].x + x2; gp2[i2].y = gp[i2].y + y2; }
@@ -9,7 +11,7 @@
 constexpr int PLAYER_HEIGHT = 40;
 constexpr int PLAYER_WIDTH = 20;
 
-constexpr int NUMBER_OF_CHUNKS = 1;
+constexpr int NUMBER_OF_CHUNKS = 3;
 
 const double ROTATION_TICK = ROTATION_SPEED * GAME_LOOP_FRACTION;
 
@@ -19,6 +21,10 @@ int flapForce;
 // we work backwards to get the drag force instead of computing it. Too much work!
 // this gives us a magic number that is our computed drag that gives us our desired terminal velocity.
 double magicDragNumber;
+
+constexpr int MAX_JUMP_TICKS = 15;
+static int jumpTicks = 0;
+static bool jumpTicking = false;
 
 const int TEXT_X = WIN_X / 2;
 const int TEXT_Y = WIN_Y / 2 - 200;
@@ -33,6 +39,7 @@ static void resetStage(void);
 static void stopFlapping();
 static void resetState();
 static void resetPlayer(int energy);
+static bool playerColliding(int chunkIdx, int chunkStart);
 //static void drawMiniMap(void);
 
 static Entity* player;
@@ -202,6 +209,18 @@ static void initLevel()
 	allChunks[0].addPointAtOffset({ WIN_X * 2, 0 }, 0);
 
 
+	allChunks[1].addLine({ 0, WIN_Y });
+	allChunks[1].addPointAtOffset({ WIN_X / 2, 0 }, 0);
+	allChunks[1].addPointAtOffset({ 200, -200 }, 0);
+	//allChunks[1].addPointAtOffset({ 0, 200 }, 0);
+	allChunks[1].addLine({ WIN_X / 2 + 200, WIN_Y });
+	allChunks[1].addPointAtOffset({ WIN_X / 2, 0 }, 1);
+
+	allChunks[2].setAntiGrav(true);
+	allChunks[2].addLine({ 0, WIN_Y });
+	allChunks[2].addPointAtOffset({ WIN_X * 2, 0 }, 0);
+
+
 	//++i; // 2
 	//gp[i].x = 500;
 	//gp[i].y = WIN_Y;
@@ -290,6 +309,19 @@ void stopFlapping()
 	haltChannel(CH_PLAYER);
 }
 
+bool isPlayerInNextChunk()
+{
+	int switchPoint = currentChunkStart + allChunks[currentChunkIdx].getChunkLength();
+	if (player->pos.x < switchPoint)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 static void playerLogic()
 {
 	// track player's acceleration this frame. Always start with gravity
@@ -297,34 +329,41 @@ static void playerLogic()
 	double playerDrag = player->velocity.y * magicDragNumber;
 	playerAcceleration.y += playerDrag;
 
+
+	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velocity x: %f y: %f", player->velocity.x, player->velocity.y);
+	double veloDelta = playerAcceleration.y * GAME_LOOP_FRACTION;
+
 	// jump / flap, optional energy requirement
-	if (app.up /*&& player->energy > 0*/)
+	if (app.up /*&& player->energy > 0*/ &&
+		(
+			(playerColliding(currentChunkIdx, currentChunkStart) || playerColliding(nextChunkIdx, nextChunkStart)) ||
+			(jumpTicks < MAX_JUMP_TICKS && jumpTicking)
+		)
+	)
 	{
-		double rot = player->rotation;
-		if (rot > 90 && rot <= 180)
-		{
-			double diff = rot - 90;
-			rot = 90 - diff;
-		}
+		jumpTicking = true;
+		jumpTicks++;
+		veloDelta -= 100;
+
 		// TODO I have the x accel working from 90 to 180 but the y is messed up in that range
 		// TODO I also need to check negative rotations
 		// subtract on the x axis
-		playerAcceleration.x -= sin(rot / 180) * flapForce;
-		playerAcceleration.y += cos(rot / 180) * flapForce;
+		//playerAcceleration.x -= sin(rot / 180) * flapForce;
+		//playerAcceleration.y += cos(rot / 180) * flapForce;
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Accel: X Calc: %f", sin(rot / 180));
 		//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Accel: X: %f Y: %f ROT: %f", playerAcceleration.x, playerAcceleration.y, rot);
 
 		player->energy--;
 	}
+	else if (!app.up)
+	{
+		jumpTicks = 0;
+		jumpTicking = false;
+	}
 
-	/*double yAccel = playerAcceleration.y * GAME_LOOP_FRACTION;
-	player->velocity.y += yAccel;
-	double yVelo = (int)round(player->velocity.y * GAME_LOOP_FRACTION);*/
-
-	double veloDelta = playerAcceleration.y * GAME_LOOP_FRACTION;
 	double posDelta = (int)round((player->velocity.y + veloDelta) * GAME_LOOP_FRACTION);
 
-	//SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "velocity x: %f y: %f", player->velocity.x, player->velocity.y);
+	player->pos.x += SCROLL;
 
 	bool died;
 
@@ -333,7 +372,6 @@ static void playerLogic()
 	player->velocity.y += veloDelta;
 
 	player->pos.y += posDelta;
-	player->pos.x += SCROLL;
 
 	// flipping logic
 	/*if (player->velocity.x > SAFE_VELOCITY)
@@ -344,22 +382,46 @@ static void playerLogic()
 	setPlayerHitBox();
 }
 
-static void groundCollisions(double* veloDelta, double* posDelta, bool* died)
+static bool playerColliding(int chunkIdx, int chunkStart)
 {
-	for (int i = 0; i < allChunks[currentChunkIdx].getNumLines(); i++)
+	for (int i = 0; i < allChunks[chunkIdx].getNumLines(); i++)
 	{
-		for (int j = 0; j < allChunks[currentChunkIdx].getLineLength(i) - 1; j++)
+		for (int j = 0; j < allChunks[chunkIdx].getLineLength(i) - 1; j++)
 		{
-			for (int p = 0; p < 3; p++)
+			for (int p = 0; p < 4; p++)
+			{
+				IntVector h1 = player->hitbox[p];
+				IntVector h2 = player->hitbox[p + 1];
+				IntVector p1 = allChunks[chunkIdx].getPoint(i, j);
+				IntVector p2 = allChunks[chunkIdx].getPoint(i, j + 1);
+				p1.x += chunkStart;
+				p2.x += chunkStart;
+				if (areIntersecting(player->hitbox[p], player->hitbox[p + 1], p1, p2))
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+static void checkCollisionsOnChunk(double* veloDelta, double* posDelta, bool* died, int chunkIdx, int chunkStart)
+{
+	for (int i = 0; i < allChunks[chunkIdx].getNumLines(); i++)
+	{
+		for (int j = 0; j < allChunks[chunkIdx].getLineLength(i) - 1; j++)
+		{
+			for (int p = 0; p < 4; p++)
 			{
 				IntVector h1 = player->hitbox[p];
 				IntVector h2 = player->hitbox[p + 1];
 				h1.y += static_cast<int>(*posDelta);
 				h2.y += static_cast<int>(*posDelta);
-				IntVector p1 = allChunks[currentChunkIdx].getPoint(i, j);
-				IntVector p2 = allChunks[currentChunkIdx].getPoint(i, j + 1);
-				p1.x += currentChunkStart;
-				p2.x += currentChunkStart;
+				IntVector p1 = allChunks[chunkIdx].getPoint(i, j);
+				IntVector p2 = allChunks[chunkIdx].getPoint(i, j + 1);
+				p1.x += chunkStart;
+				p2.x += chunkStart;
 				if (areIntersecting(player->hitbox[p], player->hitbox[p + 1], p1, p2))
 				{
 					if (p1.x == p2.x)
@@ -367,15 +429,66 @@ static void groundCollisions(double* veloDelta, double* posDelta, bool* died)
 						*died = true;
 						*veloDelta = 0;
 						*posDelta = 0;
+						return;
 					}
 					else
 					{
-						
+						double hbDistances[4];
+						int closestPoint = -1;
+						int farthestPoint = -1;
+						double shortestDist = DBL_MAX;
+						double farthestDist = 0;
+						for (p = 0; p < 4; p++)
+						{
+							hbDistances[p] = getDistancePointToLine(player->hitbox[p], p1, p2);
+							if (hbDistances[p] < shortestDist)
+							{
+								closestPoint = p;
+								shortestDist = hbDistances[p];
+							}
+							if (hbDistances[p] > farthestDist)
+							{
+								farthestPoint = p;
+								farthestDist = hbDistances[p];
+							}
+						}
+
+						if (
+							*veloDelta < 0 && player->hitbox[farthestPoint].y < player->hitbox[closestPoint].y ||
+							*veloDelta > 0 && player->hitbox[farthestPoint].y > player->hitbox[closestPoint].y
+						)
+						{
+							*died = false;
+							continue;
+						}
+
+						double slope = (double)(p2.y - p1.y) / (double)(p2.x - p1.x);
+						if (slope == 0)
+						{
+							*posDelta = p1.y - player->hitbox[closestPoint].y;
+
+						}
+						else
+						{
+							double perpendicularSlope = -(1 / slope);
+							double b = player->hitbox[closestPoint].y - perpendicularSlope * player->hitbox[closestPoint].x;
+							double y = perpendicularSlope * (player->hitbox[closestPoint].x + SCROLL) + b;
+							*posDelta = player->hitbox[closestPoint].y - y;
+						}
+						*veloDelta = (int)round(*posDelta / GAME_LOOP_FRACTION) - player->velocity.y;
+						*died = false;
+						continue;
 					}
 				}
 			}
 		}
 	}
+}
+
+static void groundCollisions(double* veloDelta, double* posDelta, bool* died)
+{
+	checkCollisionsOnChunk(veloDelta, posDelta, died, currentChunkIdx, currentChunkStart);
+	checkCollisionsOnChunk(veloDelta, posDelta, died, nextChunkIdx, nextChunkStart);
 }
 
 static void checkCollisions(double* veloDelta, double* posDelta, bool* died)
@@ -408,7 +521,18 @@ static void drawPlayer()
 		//}
 		// draw animation sprite
 
-		drawRect({ player->pos.x, player->pos.y, PLAYER_WIDTH, PLAYER_HEIGHT });
+		bool inNextChunk = isPlayerInNextChunk();
+		int color;
+		if (inNextChunk)
+		{
+			color = allChunks[nextChunkIdx].isAntiGrav() ? 255 : 0;
+		}
+		else
+		{
+			color = allChunks[currentChunkIdx].isAntiGrav() ? 255 : 0;
+		}
+		
+		drawRect({ player->pos.x, player->pos.y, PLAYER_WIDTH, PLAYER_HEIGHT }, color, color, color);
 	}
 #ifdef DRAW_HB
 	drawLine(player->hitbox[0], player->hitbox[1]);

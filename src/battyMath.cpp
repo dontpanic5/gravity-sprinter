@@ -71,3 +71,10 @@ IntVector rotatePoint(IntVector p, IntVector center, double deg)
 	};
 	return rotatedPoint;
 }
+
+double getDistancePointToLine(IntVector point, IntVector p1, IntVector p2)
+{
+	double slope = (double)(p2.y - p1.y) / (double)(p2.x - p1.x);
+	double b = p1.y - slope * p1.x;
+	return fabs(slope*point.x - point.y + b) / sqrt(slope * slope + 1);
+}

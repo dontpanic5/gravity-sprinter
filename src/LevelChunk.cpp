@@ -4,7 +4,7 @@ LevelChunk::LevelChunk()
 {
 }
 
-LevelChunk::LevelChunk(IntVector init[])
+LevelChunk::LevelChunk(IntVector init[], bool antiGrav) : m_bAntiGrav(antiGrav)
 {
 	for (int i = 0; i < sizeof(init) / sizeof(IntVector); i++)
 	{
@@ -22,6 +22,11 @@ void LevelChunk::addPointAtOffset(IntVector offset, int lineIdx)
 {
 	IntVector prevPoint = m_lines[lineIdx].back();
 	m_lines[lineIdx].push_back({ prevPoint.x + offset.x, prevPoint.y + offset.y });
+}
+
+void LevelChunk::setAntiGrav(bool antigrav)
+{
+	m_bAntiGrav = antigrav;
 }
 
 int LevelChunk::getChunkLength() const
@@ -48,4 +53,9 @@ int LevelChunk::getLineLength(int lineIdx) const
 IntVector LevelChunk::getPoint(int lineIdx, int pointIdx) const
 {
 	return m_lines[lineIdx][pointIdx];
+}
+
+bool LevelChunk::isAntiGrav() const
+{
+	return m_bAntiGrav;
 }

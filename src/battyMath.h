@@ -13,4 +13,6 @@ enum Orientation
 	O_COUNTERCLOCKWISE
 };
 
+double getDistancePointToLine(IntVector point, IntVector p1, IntVector p2);
+
 #endif // !MATH_H_INIT
