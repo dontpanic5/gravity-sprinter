@@ -50,6 +50,15 @@ int LevelChunk::getLineLength(int lineIdx) const
 	return m_lines[lineIdx].size();
 }
 
+int LevelChunk::getLineDistance(int lineIdx) const
+{
+	int furthestPoint = -1;
+	for (IntVector point : m_lines[lineIdx])
+		if (point.x > furthestPoint)
+			furthestPoint = point.x;
+	return furthestPoint;
+}
+
 IntVector LevelChunk::getPoint(int lineIdx, int pointIdx) const
 {
 	return m_lines[lineIdx][pointIdx];

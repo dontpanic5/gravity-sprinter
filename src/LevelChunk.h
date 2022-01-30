@@ -17,6 +17,7 @@ public:
 	int getChunkLength() const;
 	int getNumLines() const;
 	int getLineLength(int lineIdx) const;
+	int getLineDistance(int lineIdx) const;
 	IntVector getPoint(int lineIdx, int pointIdx) const;
 	bool isAntiGrav() const;
 protected:
